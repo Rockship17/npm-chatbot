@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyHome Chatbot Demo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f5f5f5;
+        min-height: 100vh;
+      }
+
+      /* Chatbot Styles */
+      .cyhome-chatbot-container {
+        position: fixed;
+        z-index: 10000;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      .cyhome-floating-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        user-select: none;
+        font-size: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cyhome-floating-button:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .cyhome-floating-button:hover {
+        transform: scale(1.1) translateY(-2px);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+      }
+
+      .cyhome-floating-button:hover:before {
+        opacity: 1;
+      }
+
+      .cyhome-floating-button.dragging {
+        cursor: grabbing;
+        transform: scale(1.05);
+      }
+
+      .cyhome-chatbox {
+        position: absolute;
+        right: 70px;
+        bottom: 0;
+        width: 380px;
+        height: 520px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transform: scale(0.9) translateY(20px);
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      .cyhome-chatbox.open {
+        display: flex;
+        transform: scale(1) translateY(0);
+      }
+
+      .cyhome-chatbox-header {
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cyhome-chatbox-header:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+      }
+
+      .cyhome-chatbox-title {
+        font-weight: 600;
+        font-size: 18px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .cyhome-chatbox-actions {
+        display: flex;
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .cyhome-action-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .cyhome-action-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      /* Minimized state styles */
+      .cyhome-floating-button.minimized {
+        width: 40px;
+        height: 40px;
+        right: 0;
+        border-radius: 50% 0 0 50%;
+        transform: translateX(20px);
+        font-size: 16px;
+        animation: slideToEdge 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      .cyhome-floating-button.minimized:hover {
+        transform: translateX(15px) scale(1.05);
+      }
+
+      .cyhome-chatbot-container.minimized {
+        right: 0 !important;
+      }
+
+      @keyframes slideToEdge {
+        from {
+          transform: translateX(0);
+          border-radius: 50%;
+        }
+        to {
+          transform: translateX(20px);
+          border-radius: 50% 0 0 50%;
+        }
+      }
+
+      @keyframes slideFromEdge {
+        from {
+          transform: translateX(20px);
+          border-radius: 50% 0 0 50%;
+        }
+        to {
+          transform: translateX(0);
+          border-radius: 50%;
+        }
+      }
+
+      .cyhome-floating-button.expanding {
+        animation: slideFromEdge 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      .cyhome-messages-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: #f8f9fa;
+        position: relative;
+      }
+
+      .cyhome-messages-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .cyhome-messages-container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .cyhome-messages-container::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+      }
+
+      .cyhome-message {
+        max-width: 85%;
+        padding: 14px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+        line-height: 1.5;
+        word-wrap: break-word;
+        position: relative;
+        animation: messageSlide 0.3s ease-out;
+      }
+
+      @keyframes messageSlide {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .cyhome-message.user {
+        align-self: flex-end;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-bottom-right-radius: 8px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .cyhome-message.assistant {
+        align-self: flex-start;
+        background: white;
+        color: #333;
+        border: 1px solid #e9ecef;
+        border-bottom-left-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .cyhome-input-container {
+        padding: 20px;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        gap: 12px;
+        background: white;
+        align-items: flex-end;
+      }
+
+      .cyhome-message-input {
+        flex: 1;
+        padding: 14px 18px;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        outline: none;
+        font-size: 14px;
+        resize: none;
+        transition: all 0.3s ease;
+        font-family: inherit;
+      }
+
+      .cyhome-message-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .cyhome-send-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 18px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .cyhome-send-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .cyhome-send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .cyhome-loading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #666;
+        font-size: 14px;
+        padding: 14px 18px;
+        background: white;
+        border-radius: 20px;
+        align-self: flex-start;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-bottom-left-radius: 8px;
+        animation: messageSlide 0.3s ease-out;
+      }
+
+      .cyhome-loading-dots {
+        display: flex;
+        gap: 3px;
+      }
+
+      .cyhome-loading-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #667eea;
+        animation: bounce 1.4s infinite ease-in-out both;
+      }
+
+      .cyhome-loading-dot:nth-child(1) {
+        animation-delay: -0.32s;
+      }
+      .cyhome-loading-dot:nth-child(2) {
+        animation-delay: -0.16s;
+      }
+
+      @keyframes bounce {
+        0%,
+        80%,
+        100% {
+          transform: scale(0.6);
+          opacity: 0.5;
+        }
+        40% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .cyhome-error {
+        color: #dc3545;
+        font-size: 13px;
+        padding: 12px 18px;
+        background: #f8d7da;
+        border-radius: 12px;
+        margin: 8px 0;
+        border-left: 4px solid #dc3545;
+        animation: messageSlide 0.3s ease-out;
+      }
+
+      .cyhome-welcome-message {
+        text-align: center;
+        color: #666;
+        font-size: 15px;
+        padding: 30px 20px;
+        font-style: italic;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        border-radius: 16px;
+        border: 2px dashed rgba(102, 126, 234, 0.2);
+      }
+
+      /* Sample messages for demo */
+      .demo-messages {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // CyHome Chatbot Implementation
+      class CyHomeChatbot {
+        constructor(config) {
+          this.config = config
+          this.apiBaseUrl = config.apiBaseUrl || "https://cyhome.rockship.xyz/api/v1"
+          this.container = null
+          this.chatBox = null
+          this.floatingButton = null
+          this.messagesContainer = null
+          this.messageInput = null
+          this.isOpen = false
+          this.messages = []
+          this.conversationId = null
+          this.isDragging = false
+          this.isMinimized = false
+          this.originalPosition = { right: "20px", bottom: "20px" }
+          this.init()
+        }
+
+        init() {
+          this.createUI()
+          this.loadDemoMessages()
+        }
+
+        createUI() {
+          this.container = document.createElement("div")
+          this.container.className = "cyhome-chatbot-container"
+          this.originalPosition.right = this.config.position?.right || "20px"
+          this.originalPosition.bottom = this.config.position?.bottom || "20px"
+          this.container.style.right = this.originalPosition.right
+          this.container.style.bottom = this.originalPosition.bottom
+
+          // Floating button
+          this.floatingButton = document.createElement("div")
+          this.floatingButton.className = "cyhome-floating-button"
+          this.floatingButton.innerHTML = "💬"
+          this.floatingButton.title = "Mở Chat"
+
+          // Chat box
+          this.chatBox = document.createElement("div")
+          this.chatBox.className = "cyhome-chatbox"
+
+          // Header
+          const header = document.createElement("div")
+          header.className = "cyhome-chatbox-header"
+          header.innerHTML = `
+                    <div class="cyhome-chatbox-title">CyHome Assistant</div>
+                    <div class="cyhome-chatbox-actions">
+                        <button class="cyhome-action-btn" id="minimize-btn" title="Thu nhỏ">━</button>
+                        <button class="cyhome-action-btn" id="clear-btn" title="Xóa cuộc trò chuyện">🗑️</button>
+                        <button class="cyhome-action-btn" id="close-btn" title="Đóng">✕</button>
+                    </div>
+                `
+
+          // Messages container
+          this.messagesContainer = document.createElement("div")
+          this.messagesContainer.className = "cyhome-messages-container"
+
+          // Input container
+          const inputContainer = document.createElement("div")
+          inputContainer.className = "cyhome-input-container"
+
+          this.messageInput = document.createElement("input")
+          this.messageInput.className = "cyhome-message-input"
+          this.messageInput.type = "text"
+          this.messageInput.placeholder = "Nhập tin nhắn của bạn..."
+
+          const sendBtn = document.createElement("button")
+          sendBtn.className = "cyhome-send-btn"
+          sendBtn.innerHTML = "→"
+
+          inputContainer.appendChild(this.messageInput)
+          inputContainer.appendChild(sendBtn)
+
+          this.chatBox.appendChild(header)
+          this.chatBox.appendChild(this.messagesContainer)
+          this.chatBox.appendChild(inputContainer)
+
+          this.container.appendChild(this.floatingButton)
+          this.container.appendChild(this.chatBox)
+
+          document.body.appendChild(this.container)
+
+          this.setupEventListeners()
+          this.showWelcomeMessage()
+        }
+
+        showWelcomeMessage() {
+          if (!this.messagesContainer) return
+
+          const welcomeEl = document.createElement("div")
+          welcomeEl.className = "cyhome-welcome-message"
+          welcomeEl.innerHTML = "👋 Chào mừng bạn đến với CyHome!<br>Hãy nhắn tin để bắt đầu trò chuyện nhé!"
+          this.messagesContainer.appendChild(welcomeEl)
+        }
+
+        setupEventListeners() {
+          // Toggle chat
+          this.floatingButton.addEventListener("click", (e) => {
+            if (!this.isDragging) {
+              this.toggleChat()
+            }
+          })
+
+          // Minimize chat
+          const minimizeBtn = document.getElementById("minimize-btn")
+          minimizeBtn?.addEventListener("click", () => this.minimizeChat())
+
+          // Close chat
+          const closeBtn = document.getElementById("close-btn")
+          closeBtn?.addEventListener("click", () => this.closeChat())
+
+          // Clear conversation
+          const clearBtn = document.getElementById("clear-btn")
+          clearBtn?.addEventListener("click", () => this.clearConversation())
+
+          // Send message
+          const sendBtn = this.container.querySelector(".cyhome-send-btn")
+          sendBtn?.addEventListener("click", () => this.sendMessage())
+
+          // Enter key to send
+          this.messageInput?.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+              this.sendMessage()
+            }
+          })
+
+          // Drag functionality
+          this.setupDragFunctionality()
+        }
+
+        setupDragFunctionality() {
+          let startY = 0
+          let startTop = 0
+
+          const handleMouseDown = (e) => {
+            // Don't allow dragging when minimized
+            if (this.isMinimized) return
+
+            this.isDragging = true
+            this.floatingButton.classList.add("dragging")
+            startY = e.clientY
+            const rect = this.container.getBoundingClientRect()
+            startTop = window.innerHeight - rect.bottom
+
+            document.addEventListener("mousemove", handleMouseMove)
+            document.addEventListener("mouseup", handleMouseUp)
+            e.preventDefault()
+          }
+
+          const handleMouseMove = (e) => {
+            if (!this.isDragging || !this.container || this.isMinimized) return
+
+            const deltaY = startY - e.clientY
+            let newBottom = startTop + deltaY
+
+            // Constrain to viewport
+            const containerHeight = 60
+            newBottom = Math.max(20, Math.min(window.innerHeight - containerHeight - 20, newBottom))
+
+            this.container.style.bottom = `${newBottom}px`
+            this.originalPosition.bottom = `${newBottom}px`
+          }
+
+          const handleMouseUp = () => {
+            this.isDragging = false
+            this.floatingButton.classList.remove("dragging")
+            document.removeEventListener("mousemove", handleMouseMove)
+            document.removeEventListener("mouseup", handleMouseUp)
+
+            setTimeout(() => {
+              this.isDragging = false
+            }, 100)
+          }
+
+          this.floatingButton.addEventListener("mousedown", handleMouseDown)
+        }
+
+        toggleChat() {
+          if (this.isMinimized) {
+            this.expandChat()
+            return
+          }
+
+          this.isOpen = !this.isOpen
+          if (this.isOpen) {
+            this.openChat()
+          } else {
+            this.closeChat()
+          }
+        }
+
+        minimizeChat() {
+          this.isMinimized = true
+          this.isOpen = false
+
+          // Close chat first
+          this.chatBox.classList.remove("open")
+
+          // Add minimized classes
+          this.container.classList.add("minimized")
+          this.floatingButton.classList.add("minimized")
+
+          // Move to edge
+          this.container.style.right = "0px"
+
+          // Change button appearance
+          this.floatingButton.innerHTML = "💬"
+          this.floatingButton.title = "Mở rộng Chat"
+        }
+
+        expandChat() {
+          this.isMinimized = false
+
+          // Remove minimized classes
+          this.container.classList.remove("minimized")
+          this.floatingButton.classList.remove("minimized")
+          this.floatingButton.classList.add("expanding")
+
+          // Restore original position
+          this.container.style.right = this.originalPosition.right
+
+          // Reset button appearance
+          this.floatingButton.innerHTML = "💬"
+          this.floatingButton.title = "Mở Chat"
+
+          // Remove expanding animation class after animation completes
+          setTimeout(() => {
+            this.floatingButton.classList.remove("expanding")
+          }, 500)
+
+          // Auto open chat
+          setTimeout(() => {
+            this.openChat()
+          }, 300)
+        }
+
+        openChat() {
+          this.isOpen = true
+          this.chatBox.classList.add("open")
+          this.messageInput?.focus()
+        }
+
+        closeChat() {
+          this.isOpen = false
+          this.chatBox.classList.remove("open")
+        }
+
+        loadDemoMessages() {
+          // Demo messages for UI demonstration
+          this.messages = []
+        }
+
+        renderMessages() {
+          if (!this.messagesContainer) return
+
+          // Clear welcome message
+          const welcome = this.messagesContainer.querySelector(".cyhome-welcome-message")
+          welcome?.remove()
+
+          this.messagesContainer.innerHTML = ""
+
+          if (this.messages.length === 0) {
+            this.showWelcomeMessage()
+            return
+          }
+
+          this.messages.forEach((message) => {
+            const messageEl = document.createElement("div")
+            messageEl.className = `cyhome-message ${message.type}`
+            messageEl.textContent = message.content
+            this.messagesContainer.appendChild(messageEl)
+          })
+
+          this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight
+        }
+
+        showLoading() {
+          if (!this.messagesContainer) return
+
+          const loadingEl = document.createElement("div")
+          loadingEl.className = "cyhome-loading"
+          loadingEl.innerHTML = `
+                    <span>Assistant đang trả lời</span>
+                    <div class="cyhome-loading-dots">
+                        <div class="cyhome-loading-dot"></div>
+                        <div class="cyhome-loading-dot"></div>
+                        <div class="cyhome-loading-dot"></div>
+                    </div>
+                `
+          loadingEl.id = "loading-indicator"
+
+          this.messagesContainer.appendChild(loadingEl)
+          this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight
+        }
+
+        hideLoading() {
+          const loadingEl = document.getElementById("loading-indicator")
+          loadingEl?.remove()
+        }
+
+        showError(message) {
+          if (!this.messagesContainer) return
+
+          const errorEl = document.createElement("div")
+          errorEl.className = "cyhome-error"
+          errorEl.textContent = message
+
+          this.messagesContainer.appendChild(errorEl)
+          this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight
+
+          setTimeout(() => errorEl.remove(), 5000)
+        }
+
+        async sendMessage() {
+          const input = this.messageInput
+          if (!input || !input.value.trim()) return
+
+          const message = input.value.trim()
+          input.value = ""
+
+          // Add user message to UI
+          const userMessage = {
+            id: Date.now().toString(),
+            conversation_id: this.conversationId || "",
+            content: message,
+            type: "user",
+            token_usage: 0,
+            created_at: new Date().toISOString(),
+          }
+
+          this.messages.push(userMessage)
+          this.renderMessages()
+          this.showLoading()
+
+          // Simulate API response for demo
+          setTimeout(() => {
+            this.hideLoading()
+
+            const assistantMessage = {
+              id: (Date.now() + 1).toString(),
+              conversation_id: this.conversationId || "",
+              content: this.getDemoResponse(message),
+              type: "assistant",
+              token_usage: 100,
+              created_at: new Date().toISOString(),
+            }
+
+            this.messages.push(assistantMessage)
+            this.renderMessages()
+          }, 1500)
+        }
+
+        getDemoResponse(userMessage) {
+          const responses = [
+            "Cảm ơn bạn đã liên hệ! Tôi là CyHome Assistant và sẵn sàng hỗ trợ bạn về các dịch vụ nhà thông minh.",
+            "CyHome cung cấp giải pháp nhà thông minh toàn diện. Bạn có muốn tìm hiểu về điều khiển thiết bị thông minh không?",
+            "Chúng tôi có hệ thống bảo mật thông minh, điều khiển ánh sáng tự động và nhiều tính năng khác. Bạn quan tâm đến tính năng nào?",
+            "Với CyHome, bạn có thể tiết kiệm đến 30% hóa đơn điện hàng tháng nhờ hệ thống quản lý năng lượng thông minh!",
+            "Tôi có thể giúp bạn cài đặt và cấu hình hệ thống. Bạn có muốn đặt lịch tư vấn miễn phí không?",
+          ]
+
+          return responses[Math.floor(Math.random() * responses.length)]
+        }
+
+        clearConversation() {
+          this.messages = []
+          this.conversationId = null
+          this.renderMessages()
+
+          // Show success message
+          setTimeout(() => {
+            const messageEl = document.createElement("div")
+            messageEl.className = "cyhome-message assistant"
+            messageEl.textContent = "Cuộc trò chuyện đã được xóa. Hãy start lại cuộc trò chuyện mới!"
+            this.messagesContainer.appendChild(messageEl)
+            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight
+          }, 500)
+        }
+      }
+
+      // Initialize chatbot
+      const chatbot = new CyHomeChatbot({
+        userId: "12345",
+        userName: "Demo User",
+        theme: {
+          primaryColor: "#667eea",
+        },
+        position: {
+          right: "30px",
+          bottom: "30px",
+        },
+      })
+    </script>
+  </body>
+</html>
