@@ -1,14 +1,371 @@
-/* Base styles for CyHome Chatbot SDK */
-.cyhome-chatbot * {
-  box-sizing: border-box;
+/* Chatbot Styles */
+.cyhome-chatbot-container {
+  position: fixed;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Reset styles to avoid conflicts */
-.cyhome-chatbot {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.cyhome-floating-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  font-size: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyhome-floating-button:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cyhome-floating-button:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+}
+
+.cyhome-floating-button:hover:before {
+  opacity: 1;
+}
+
+.cyhome-floating-button.dragging {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+/* Chatbox styles */
+.cyhome-chatbox {
+  position: absolute;
+  right: 70px;
+  bottom: 0;
+  width: 380px;
+  height: 520px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.cyhome-chatbox.open {
+  display: flex;
+  transform: scale(1) translateY(0);
+}
+
+.cyhome-chatbox-header {
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyhome-chatbox-header:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+}
+
+.cyhome-chatbox-title {
+  font-weight: 600;
+  font-size: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.cyhome-chatbox-actions {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.cyhome-action-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+}
+
+.cyhome-action-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Minimized state styles */
+.cyhome-floating-button.minimized {
+  width: 40px;
+  height: 40px;
+  right: 0;
+  border-radius: 50% 0 0 50%;
+  transform: translateX(20px);
+  font-size: 16px;
+  animation: slideToEdge 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.cyhome-floating-button.minimized:hover {
+  transform: translateX(15px) scale(1.05);
+}
+
+.cyhome-chatbot-container.minimized {
+  right: 0 !important;
+}
+
+@keyframes slideToEdge {
+  from {
+    transform: translateX(0);
+    border-radius: 50%;
+  }
+  to {
+    transform: translateX(20px);
+    border-radius: 50% 0 0 50%;
+  }
+}
+
+@keyframes slideFromEdge {
+  from {
+    transform: translateX(20px);
+    border-radius: 50% 0 0 50%;
+  }
+  to {
+    transform: translateX(0);
+    border-radius: 50%;
+  }
+}
+
+.cyhome-floating-button.expanding {
+  animation: slideFromEdge 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Messages container styles */
+.cyhome-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #f8f9fa;
+  position: relative;
+}
+
+.cyhome-messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cyhome-messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cyhome-messages-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.cyhome-message {
+  max-width: 85%;
+  padding: 14px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  position: relative;
+  animation: messageSlide 0.3s ease-out;
+}
+
+@keyframes messageSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cyhome-message.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom-right-radius: 8px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.cyhome-message.assistant {
+  align-self: flex-start;
+  background: white;
+  color: #333;
+  border: 1px solid #e9ecef;
+  border-bottom-left-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Input container styles */
+.cyhome-input-container {
+  padding: 20px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 12px;
+  background: white;
+  align-items: flex-end;
+}
+
+.cyhome-message-input {
+  flex: 1;
+  padding: 14px 18px;
+  border: 2px solid #e9ecef;
+  border-radius: 25px;
+  outline: none;
+  font-size: 14px;
+  resize: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.cyhome-message-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.cyhome-send-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 18px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.cyhome-send-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.cyhome-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading indicator styles */
+.cyhome-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #666;
+  font-size: 14px;
+  padding: 14px 18px;
+  background: white;
+  border-radius: 20px;
+  align-self: flex-start;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-bottom-left-radius: 8px;
+  animation: messageSlide 0.3s ease-out;
+}
+
+.cyhome-loading-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.cyhome-loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #667eea;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.cyhome-loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.cyhome-loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Error and welcome message styles */
+.cyhome-error {
+  color: #dc3545;
+  font-size: 13px;
+  padding: 12px 18px;
+  background: #f8d7da;
+  border-radius: 12px;
+  margin: 8px 0;
+  border-left: 4px solid #dc3545;
+  animation: messageSlide 0.3s ease-out;
+}
+
+.cyhome-welcome-message {
+  text-align: center;
+  color: #666;
+  font-size: 15px;
+  padding: 30px 20px;
+  font-style: italic;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-radius: 16px;
+  border: 2px dashed rgba(102, 126, 234, 0.2);
 }
 
 /* Utility classes */
