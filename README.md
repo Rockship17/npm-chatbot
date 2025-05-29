@@ -5,12 +5,9 @@ Một SDK JavaScript/TypeScript để tích hợp chatbot Rockship vào website 
 ## Tính năng
 
 - 🚀 Dễ dàng tích hợp với chỉ vài dòng code
-- 💬 Giao diện chat hiện đại và responsive
 - 🎨 Có thể tùy chỉnh theme và vị trí
-- 📱 Hỗ trợ mobile và desktop
-- 🔄 Tự động load tin nhắn cũ khi scroll lên
 - 🗑️ Chức năng xóa cuộc trò chuyện
-- ⚡ Được viết bằng TypeScript với type safety
+- ⚡ Được viết bằng TypeScript
 
 ## Cài đặt
 
@@ -58,7 +55,6 @@ pnpm install rockship-chatbot-sdk
             apiBaseUrl: "https://bot.rockship.xyz/api/v1", // URL của API
             theme: {
                 primaryColor: "#007bff",     // Màu chủ đạo
-                secondaryColor: "#6c757d",  // Màu phụ
                 textColor: "#212529",       // Màu chữ
                 backgroundColor: "#ffffff"   // Màu nền
             }
@@ -90,7 +86,6 @@ function App() {
       apiBaseUrl: "https://bot.rockship.xyz/api/v1",
       theme: {
         primaryColor: "#007bff",
-        secondaryColor: "#6c757d",
         textColor: "#212529",
         backgroundColor: "#ffffff"
       }
@@ -115,31 +110,6 @@ function App() {
 export default App;
 ```
 
-### Tùy chỉnh nâng cao
-
-```javascript
-const chatbot = new RockshipChatbotSDK({
-  platformUserId: "YOUR_PLATFORM_USER_ID",
-  userName: "YOUR_USER_NAME",
-  apiToken: "YOUR_API_TOKEN",
-  apiBaseUrl: "https://bot.rockship.xyz/api/v1",
-  theme: {
-    primaryColor: "#007bff",
-    secondaryColor: "#6c757d",
-    textColor: "#212529",
-    backgroundColor: "#ffffff"
-  },
-  position: {
-    bottom: "20px",
-    right: "20px"
-  },
-  welcomeMessage: "Xin chào! Tôi có thể giúp gì cho bạn?",
-  placeholder: "Nhập tin nhắn của bạn...",
-  botName: "Rockship Chatbot",
-  botAvatar: "https://example.com/bot-avatar.png"
-});
-```
-
 ### Cách 1: Sử dụng SDK Class (Recommended)
 
 ```javascript
@@ -151,7 +121,6 @@ const chatbot = new RockshipChatbotSDK({
   platformUserId: 'YOUR_PLATFORM_USER_ID',
   apiToken: 'YOUR_API_TOKEN', // required for authentication
   apiBaseUrl: 'https://bot.rockship.xyz/api/v1', // optional
-  position: 'bottom-right', // optional
   theme: {
     primaryColor: '#007bff',
     backgroundColor: '#f8f9fa',
@@ -178,7 +147,6 @@ function App() {
     userName: 'YOUR_USER_NAME',
     platformUserId: 'YOUR_PLATFORM_USER_ID',
     apiToken: 'YOUR_API_TOKEN',
-    position: 'bottom-right',
     theme: {
       primaryColor: '#007bff',
       backgroundColor: '#f8f9fa',
@@ -215,7 +183,8 @@ function App() {
         const chatbot = new window.RockshipChatbotSDK({
             userName: 'YOUR_USER_NAME',
             platformUserId: 'YOUR_PLATFORM_USER_ID',
-            position: 'bottom-right',
+            apiToken: 'YOUR_API_TOKEN',
+            apiBaseUrl: 'https://bot.rockship.xyz/api/v1',
             theme: {
                 primaryColor: '#007bff',
                 backgroundColor: '#f8f9fa',
@@ -243,108 +212,8 @@ interface ChatbotConfig {
     backgroundColor?: string;          // Màu nền (mặc định: #f8f9fa)
     textColor?: string;               // Màu chữ (mặc định: #333)
   };
-  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'; // Vị trí (mặc định: bottom-right)
-  welcomeMessage?: string;            // Tin nhắn chào mừng
 }
 ```
-
-## API Methods (SDK Class)
-
-### `init(containerId?: string)`
-
-Khởi tạo chatbot. Nếu không truyền `containerId`, chatbot sẽ được thêm vào body.
-
-### `updateConfig(newConfig: Partial<ChatbotConfig>)`
-
-Cập nhật cấu hình chatbot.
-
-```javascript
-chatbot.updateConfig({
-  theme: {
-    primaryColor: '#28a745'
-  }
-});
-```
-
-### `destroy()`
-
-Hủy chatbot và cleanup resources.
-
-```javascript
-chatbot.destroy();
-```
-
-### `getConfig()`
-
-Lấy cấu hình hiện tại.
-
-```javascript
-const currentConfig = chatbot.getConfig();
-```
-
-## Ví dụ nâng cao
-
-### Tùy chỉnh theme dark mode
-
-```javascript
-const darkThemeChatbot = new RockshipChatbotSDK({
-  userName: 'User',
-  platformUserId: 'user123',
-  theme: {
-    primaryColor: '#6366f1',
-    backgroundColor: '#1f2937',
-    textColor: '#f9fafb'
-  },
-  position: 'bottom-left'
-});
-
-darkThemeChatbot.init();
-```
-
-### Sử dụng với framework khác (Vue.js)
-
-```vue
-<template>
-  <div>
-    <h1>My Vue App</h1>
-    <div id="chatbot-container"></div>
-  </div>
-</template>
-
-<script>
-import CyHomeChatbotSDK from 'cyhome-chatbot-sdk';
-
-export default {
-  name: 'App',
-  mounted() {
-    this.chatbot = new RockshipChatbotSDK({
-      userName: 'Vue User',
-      platformUserId: 'vue-user-123'
-    });
-    
-    this.chatbot.init('chatbot-container');
-  },
-  beforeUnmount() {
-    if (this.chatbot) {
-      this.chatbot.destroy();
-    }
-  }
-}
-</script>
-```
-
-## API Endpoints sử dụng
-
-SDK sử dụng các API endpoints sau:
-
-- `GET /api/v1/message/:platform_user_id` - Lấy danh sách tin nhắn
-- `POST /api/v1/cyhome/invoke` - Gửi tin nhắn mới (API endpoint giữ nguyên)
-- `GET /api/v1/conversation/:platform_user_id` - Lấy thông tin conversation
-- `DELETE /api/v1/conversation/:conversation_id` - Xóa conversation
-
-## Development
-
-### Build từ source
 
 ```bash
 # Clone repository
@@ -361,19 +230,6 @@ npm run build
 npm run dev
 ```
 
-### Publish to NPM
-
-```bash
-# Build trước khi publish
-npm run build
-
-# Login to NPM
-npm login
-
-# Publish
-npm publish
-```
-
 ## Browser Support
 
 - Chrome 60+
@@ -384,14 +240,6 @@ npm publish
 ## License
 
 MIT
-
-## Contributing
-
-1. Fork repository
-2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Tạo Pull Request
 
 ## Support
 
