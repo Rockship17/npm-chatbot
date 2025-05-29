@@ -59,67 +59,47 @@ var ChatWidget = function (_a) {
     var _d = (0, react_1.useState)(false), isLoading = _d[0], setIsLoading = _d[1];
     var _e = (0, react_1.useState)(false), isClearing = _e[0], setIsClearing = _e[1];
     var _f = (0, react_1.useState)(null), conversationId = _f[0], setConversationId = _f[1];
-    var _g = (0, react_1.useState)(""), cursor = _g[0], setCursor = _g[1];
-    var _h = (0, react_1.useState)(true), hasMore = _h[0], setHasMore = _h[1];
-    var _j = (0, react_1.useState)(false), isLoadingMore = _j[0], setIsLoadingMore = _j[1];
-    var _k = (0, react_1.useState)(false), initialized = _k[0], setInitialized = _k[1];
+    var _g = (0, react_1.useState)(false), initialized = _g[0], setInitialized = _g[1];
     var messagesEndRef = (0, react_1.useRef)(null);
     var messagesContainerRef = (0, react_1.useRef)(null);
-    var api = (0, react_1.useRef)(new api_1.ChatbotAPI(config.apiBaseUrl));
+    // Check if apiToken is available in config
+    var apiToken = config.apiToken || '';
+    var api = (0, react_1.useRef)(new api_1.ChatbotAPI(apiToken, config.apiBaseUrl));
     var scrollToBottom = function () {
         var _a;
         (_a = messagesEndRef.current) === null || _a === void 0 ? void 0 : _a.scrollIntoView({ behavior: "smooth" });
     };
-    var loadMessages = (0, react_1.useCallback)(function () {
-        var args_1 = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args_1[_i] = arguments[_i];
-        }
-        return __awaiter(void 0, __spreadArray([], args_1, true), void 0, function (loadMore) {
-            var response, sortedMessages_1, error_1;
-            if (loadMore === void 0) { loadMore = false; }
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, 3, 4]);
-                        if (loadMore) {
-                            setIsLoadingMore(true);
-                        }
-                        return [4 /*yield*/, api.current.getMessages(config.platformUserId, loadMore ? cursor : undefined)];
-                    case 1:
-                        response = _a.sent();
-                        if (response.data.message.length > 0) {
-                            sortedMessages_1 = __spreadArray([], response.data.message, true).reverse();
-                            if (loadMore) {
-                                setMessages(function (prev) { return __spreadArray(__spreadArray([], sortedMessages_1, true), prev, true); });
-                            }
-                            else {
-                                setMessages(sortedMessages_1);
-                                setConversationId(response.data.conversation_id);
-                            }
-                            setCursor(response.paging.NextCursor);
-                            setHasMore(!!response.paging.NextCursor);
-                        }
-                        else {
-                            setMessages([]);
-                            setHasMore(false);
-                        }
-                        return [3 /*break*/, 4];
-                    case 2:
-                        error_1 = _a.sent();
-                        console.error("Error loading messages:", error_1);
+    var loadMessages = (0, react_1.useCallback)(function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response, sortedMessages, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, 3, 4]);
+                    setIsLoading(true);
+                    return [4 /*yield*/, api.current.getMessages(config.platformUserId)];
+                case 1:
+                    response = _a.sent();
+                    if (response.data.message && response.data.message.length > 0) {
+                        sortedMessages = __spreadArray([], response.data.message, true).reverse();
+                        setMessages(sortedMessages);
+                        setConversationId(response.data.conversation_id);
+                    }
+                    else {
                         setMessages([]);
-                        return [3 /*break*/, 4];
-                    case 3:
-                        if (loadMore) {
-                            setIsLoadingMore(false);
-                        }
-                        return [7 /*endfinally*/];
-                    case 4: return [2 /*return*/];
-                }
-            });
+                    }
+                    return [3 /*break*/, 4];
+                case 2:
+                    error_1 = _a.sent();
+                    console.error("Error loading messages:", error_1);
+                    setMessages([]);
+                    return [3 /*break*/, 4];
+                case 3:
+                    setIsLoading(false);
+                    return [7 /*endfinally*/];
+                case 4: return [2 /*return*/];
+            }
         });
-    }, [config.platformUserId, cursor]);
+    }); }, [config.platformUserId]);
     var handleSendMessage = function (message) { return __awaiter(void 0, void 0, void 0, function () {
         var userMessage, response, aiMessage_1, convResponse, error_2, error_3;
         return __generator(this, function (_a) {
@@ -148,7 +128,7 @@ var ChatWidget = function (_a) {
                     aiMessage_1 = {
                         id: (Date.now() + 1).toString(),
                         conversation_id: conversationId || "",
-                        content: response.data.ai_response,
+                        content: response.data.ai_reply,
                         type: "assistant",
                         token_usage: response.data.token_usage,
                         created_at: new Date().toISOString(),
@@ -192,13 +172,11 @@ var ChatWidget = function (_a) {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, 4, 5]);
-                    return [4 /*yield*/, api.current.clearConversation(conversationId)];
+                    return [4 /*yield*/, api.current.clearConversation(config.platformUserId)];
                 case 2:
                     _a.sent();
                     setMessages([]);
                     setConversationId(null);
-                    setCursor("");
-                    setHasMore(true);
                     return [3 /*break*/, 5];
                 case 3:
                     error_4 = _a.sent();
@@ -211,14 +189,6 @@ var ChatWidget = function (_a) {
             }
         });
     }); };
-    var handleScroll = (0, react_1.useCallback)(function () {
-        var container = messagesContainerRef.current;
-        if (!container || isLoadingMore || !hasMore)
-            return;
-        if (container.scrollTop === 0) {
-            loadMessages(true);
-        }
-    }, [isLoadingMore, hasMore, loadMessages]);
     (0, react_1.useEffect)(function () {
         if (isOpen && !initialized) {
             loadMessages();
@@ -226,10 +196,10 @@ var ChatWidget = function (_a) {
         }
     }, [isOpen, initialized, loadMessages]);
     (0, react_1.useEffect)(function () {
-        if (messages.length > 0 && !isLoadingMore) {
+        if (messages.length > 0) {
             scrollToBottom();
         }
-    }, [messages, isLoadingMore]);
+    }, [messages]);
     if (!isOpen)
         return null;
     // Không hiển thị nội dung chat khi ở chế độ thu nhỏ
@@ -244,6 +214,6 @@ var ChatWidget = function (_a) {
     };
     return ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-chatbox ".concat(isOpen ? "open" : "", " fixed ").concat(positionClasses[position]), style: {
             backgroundColor: ((_b = config.theme) === null || _b === void 0 ? void 0 : _b.backgroundColor) || "#ffffff",
-        }, children: [(0, jsx_runtime_1.jsx)(ChatHeader_1.ChatHeader, { userName: config.userName, onClose: onClose, onClear: handleClearConversation, isClearing: isClearing, theme: config.theme }), (0, jsx_runtime_1.jsxs)("div", { ref: messagesContainerRef, onScroll: handleScroll, className: "rockship-messages-container", children: [isLoadingMore && ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading", children: [(0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" })] }), (0, jsx_runtime_1.jsx)("span", { children: "\u0110ang t\u1EA3i tin nh\u1EAFn c\u0169..." })] })), messages.length === 0 && !isLoadingMore ? ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-welcome-message", children: [(0, jsx_runtime_1.jsx)("svg", { className: "w-12 h-12 mx-auto mb-4 opacity-50", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" }) }), (0, jsx_runtime_1.jsx)("p", { className: "text-base", children: config.welcomeMessage || "Chào mừng bạn đến với Rockship Support!" }), (0, jsx_runtime_1.jsx)("p", { className: "text-sm mt-2 opacity-75", children: "H\u00E3y g\u1EEDi tin nh\u1EAFn \u0111\u1EC3 b\u1EAFt \u0111\u1EA7u tr\u00F2 chuy\u1EC7n" })] })) : ((0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: messages.map(function (message) { return ((0, jsx_runtime_1.jsx)(ChatMessage_1.ChatMessage, { message: message, theme: config.theme }, message.id)); }) })), isLoading && ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading", children: [(0, jsx_runtime_1.jsx)("span", { children: "\u0110ang tr\u1EA3 l\u1EDDi" }), (0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" })] })] })), (0, jsx_runtime_1.jsx)("div", { ref: messagesEndRef })] }), (0, jsx_runtime_1.jsx)(ChatInput_1.ChatInput, { onSendMessage: handleSendMessage, isLoading: isLoading, theme: config.theme })] }));
+        }, children: [(0, jsx_runtime_1.jsx)(ChatHeader_1.ChatHeader, { userName: config.userName, onClose: onClose, onClear: handleClearConversation, isClearing: isClearing, theme: config.theme }), (0, jsx_runtime_1.jsxs)("div", { ref: messagesContainerRef, className: "rockship-messages-container", children: [messages.length === 0 && !isLoading ? ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-welcome-message", children: [(0, jsx_runtime_1.jsx)("svg", { className: "w-12 h-12 mx-auto mb-4 opacity-50", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" }) }), (0, jsx_runtime_1.jsx)("p", { className: "text-base", children: config.welcomeMessage || "Chào mừng bạn đến với Rockship Support!" }), (0, jsx_runtime_1.jsx)("p", { className: "text-sm mt-2 opacity-75", children: "H\u00E3y g\u1EEDi tin nh\u1EAFn \u0111\u1EC3 b\u1EAFt \u0111\u1EA7u tr\u00F2 chuy\u1EC7n" })] })) : ((0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: messages.map(function (message) { return ((0, jsx_runtime_1.jsx)(ChatMessage_1.ChatMessage, { message: message, theme: config.theme }, message.id)); }) })), isLoading && ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading", children: [(0, jsx_runtime_1.jsx)("span", { children: messages.length === 0 ? "Đang tải tin nhắn" : "Đang trả lời" }), (0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" })] })] })), (0, jsx_runtime_1.jsx)("div", { ref: messagesEndRef })] }), (0, jsx_runtime_1.jsx)(ChatInput_1.ChatInput, { onSendMessage: handleSendMessage, isLoading: isLoading, theme: config.theme })] }));
 };
 exports.ChatWidget = ChatWidget;

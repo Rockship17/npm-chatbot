@@ -1,6 +1,6 @@
-# Rockship Chatbot SDK
+# Rockship Chatbot SDK v1.1.0
 
-Một SDK JavaScript/TypeScript để tích hợp chatbot Rockship vào website của bạn một cách dễ dàng
+Một SDK JavaScript/TypeScript để tích hợp chatbot Rockship vào website của bạn một cách dễ dàng với API mới nhất
 
 ## Tính năng
 
@@ -54,7 +54,8 @@ pnpm install rockship-chatbot-sdk
         const chatbot = new RockshipChatbotSDK({
             platformUserId: "YOUR_PLATFORM_USER_ID", // ID của người dùng (bắt buộc)
             userName: "YOUR_USER_NAME",     // Tên hiển thị của người dùng
-            apiBaseUrl: "https://cyhome.rockship.xyz/api/v1", // URL của API
+            apiToken: "YOUR_API_TOKEN",     // Token xác thực (bắt buộc)
+            apiBaseUrl: "https://bot.rockship.xyz/api/v1", // URL của API
             theme: {
                 primaryColor: "#007bff",     // Màu chủ đạo
                 secondaryColor: "#6c757d",  // Màu phụ
@@ -85,7 +86,8 @@ function App() {
     const chatbot = new RockshipChatbotSDK({
       platformUserId: "YOUR_PLATFORM_USER_ID",
       userName: "YOUR_USER_NAME",
-      apiBaseUrl: "https://cyhome.rockship.xyz/api/v1",
+      apiToken: "YOUR_API_TOKEN",
+      apiBaseUrl: "https://bot.rockship.xyz/api/v1",
       theme: {
         primaryColor: "#007bff",
         secondaryColor: "#6c757d",
@@ -119,7 +121,8 @@ export default App;
 const chatbot = new RockshipChatbotSDK({
   platformUserId: "YOUR_PLATFORM_USER_ID",
   userName: "YOUR_USER_NAME",
-  apiBaseUrl: "https://cyhome.rockship.xyz/api/v1",
+  apiToken: "YOUR_API_TOKEN",
+  apiBaseUrl: "https://bot.rockship.xyz/api/v1",
   theme: {
     primaryColor: "#007bff",
     secondaryColor: "#6c757d",
@@ -146,7 +149,8 @@ import RockshipChatbotSDK from 'rockship-chatbot-sdk';
 const chatbot = new RockshipChatbotSDK({
   userName: 'YOUR_USER_NAME',
   platformUserId: 'YOUR_PLATFORM_USER_ID',
-  apiBaseUrl: 'https://cyhome.rockship.xyz/api/v1', // optional
+  apiToken: 'YOUR_API_TOKEN', // required for authentication
+  apiBaseUrl: 'https://bot.rockship.xyz/api/v1', // optional
   position: 'bottom-right', // optional
   theme: {
     primaryColor: '#007bff',
@@ -173,6 +177,7 @@ function App() {
   const config = {
     userName: 'YOUR_USER_NAME',
     platformUserId: 'YOUR_PLATFORM_USER_ID',
+    apiToken: 'YOUR_API_TOKEN',
     position: 'bottom-right',
     theme: {
       primaryColor: '#007bff',

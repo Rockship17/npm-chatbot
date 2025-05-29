@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from "react"
+import React, { useState, useRef, useEffect, KeyboardEvent } from "react"
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void
@@ -12,6 +12,19 @@ interface ChatInputProps {
 
 export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, theme }) => {
   const [message, setMessage] = useState("")
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  
+  // Auto-resize textarea based on content
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (textarea) {
+      // Reset height to get the correct scrollHeight
+      textarea.style.height = 'auto'
+      // Set the height to the scrollHeight
+      const newHeight = Math.min(textarea.scrollHeight, 120) // Max height of 120px
+      textarea.style.height = `${newHeight}px`
+    }
+  }, [message])
 
   const handleSend = () => {
     if (message.trim() && !isLoading) {
@@ -31,15 +44,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, 
     <div className="border-t bg-white p-4">
       <div className="flex items-end gap-2">
         <textarea
+          ref={textareaRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Nhập tin nhắn của bạn..."
           style={{
             borderColor: "#e9ecef",
+            minHeight: "40px",
+            maxHeight: "120px",
+            overflowY: "auto"
           }}
           // Custom className with focus ring color based on theme
-          className={`flex-1 resize-none border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 max-h-24 focus:ring-${
+          className={`flex-1 resize-none border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 focus:ring-${
             theme?.primaryColor?.replace("#", "") || "007bff"
           }`}
           rows={1}

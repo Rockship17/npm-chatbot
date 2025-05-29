@@ -1,6 +1,7 @@
 export interface ChatbotConfig {
     userName: string;
     platformUserId: string;
+    apiToken: string;
     apiBaseUrl?: string;
     theme?: {
         primaryColor?: string;
@@ -36,7 +37,7 @@ export interface MessageResponse {
 
 export interface ChatResponse {
     data: {
-        ai_response: string;
+        ai_reply: string;
         token_usage: number;
     };
 }

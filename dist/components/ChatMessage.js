@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatMessage = void 0;
 var jsx_runtime_1 = require("react/jsx-runtime");
+var react_markdown_1 = __importDefault(require("react-markdown"));
 var ChatMessage = function (_a) {
     var message = _a.message, theme = _a.theme;
     var isUser = message.type === "user";
@@ -15,6 +19,6 @@ var ChatMessage = function (_a) {
                         backgroundColor: isUser ? (theme === null || theme === void 0 ? void 0 : theme.primaryColor) || "#007bff" : (theme === null || theme === void 0 ? void 0 : theme.backgroundColor) || "#f8f9fa",
                         color: isUser ? "white" : (theme === null || theme === void 0 ? void 0 : theme.textColor) || "#333",
                         borderColor: !isUser ? "#e9ecef" : "transparent",
-                    }, children: (0, jsx_runtime_1.jsx)("p", { className: "text-sm leading-relaxed whitespace-pre-wrap", children: message.content }) }), (0, jsx_runtime_1.jsx)("div", { className: "text-xs text-gray-500 mt-1 ".concat(isUser ? "text-right" : "text-left"), children: formatTime(message.created_at) })] }) }));
+                    }, children: isUser ? ((0, jsx_runtime_1.jsx)("p", { className: "text-sm leading-relaxed whitespace-pre-wrap", children: message.content })) : ((0, jsx_runtime_1.jsx)("div", { className: "text-sm leading-relaxed markdown-content", children: (0, jsx_runtime_1.jsx)(react_markdown_1.default, { children: message.content }) })) }), (0, jsx_runtime_1.jsx)("div", { className: "text-xs text-gray-500 mt-1 ".concat(isUser ? "text-right" : "text-left"), children: formatTime(message.created_at) })] }) }));
 };
 exports.ChatMessage = ChatMessage;

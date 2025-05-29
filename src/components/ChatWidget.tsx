@@ -18,55 +18,40 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
   const [isLoading, setIsLoading] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
-  const [cursor, setCursor] = useState<string>("")
-  const [hasMore, setHasMore] = useState(true)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [initialized, setInitialized] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
-  const api = useRef(new ChatbotAPI(config.apiBaseUrl))
+  // Check if apiToken is available in config
+  const apiToken = config.apiToken || ''
+  const api = useRef(new ChatbotAPI(apiToken, config.apiBaseUrl))
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
   const loadMessages = useCallback(
-    async (loadMore = false) => {
+    async () => {
       try {
-        if (loadMore) {
-          setIsLoadingMore(true)
-        }
+        setIsLoading(true);
+        const response = await api.current.getMessages(config.platformUserId);
 
-        const response = await api.current.getMessages(config.platformUserId, loadMore ? cursor : undefined)
-
-        if (response.data.message.length > 0) {
+        if (response.data.message && response.data.message.length > 0) {
           // Reverse messages to show oldest first
-          const sortedMessages = [...response.data.message].reverse()
-
-          if (loadMore) {
-            setMessages((prev) => [...sortedMessages, ...prev])
-          } else {
-            setMessages(sortedMessages)
-            setConversationId(response.data.conversation_id)
-          }
-
-          setCursor(response.paging.NextCursor)
-          setHasMore(!!response.paging.NextCursor)
+          const sortedMessages = [...response.data.message].reverse();
+          setMessages(sortedMessages);
+          setConversationId(response.data.conversation_id);
         } else {
-          setMessages([])
-          setHasMore(false)
+          setMessages([]);
         }
       } catch (error) {
-        console.error("Error loading messages:", error)
-        setMessages([])
+        console.error("Error loading messages:", error);
+        setMessages([]);
       } finally {
-        if (loadMore) {
-          setIsLoadingMore(false)
-        }
+        setIsLoading(false);
       }
     },
-    [config.platformUserId, cursor]
+    [config.platformUserId]
   )
 
   const handleSendMessage = async (message: string) => {
@@ -93,7 +78,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         conversation_id: conversationId || "",
-        content: response.data.ai_response,
+        content: response.data.ai_reply,
         type: "assistant",
         token_usage: response.data.token_usage,
         created_at: new Date().toISOString(),
@@ -124,26 +109,15 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
 
     setIsClearing(true)
     try {
-      await api.current.clearConversation(conversationId)
+      await api.current.clearConversation(config.platformUserId)
       setMessages([])
       setConversationId(null)
-      setCursor("")
-      setHasMore(true)
     } catch (error) {
       console.error("Error clearing conversation:", error)
     } finally {
       setIsClearing(false)
     }
   }
-
-  const handleScroll = useCallback(() => {
-    const container = messagesContainerRef.current
-    if (!container || isLoadingMore || !hasMore) return
-
-    if (container.scrollTop === 0) {
-      loadMessages(true)
-    }
-  }, [isLoadingMore, hasMore, loadMessages])
 
   useEffect(() => {
     if (isOpen && !initialized) {
@@ -153,10 +127,10 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
   }, [isOpen, initialized, loadMessages])
 
   useEffect(() => {
-    if (messages.length > 0 && !isLoadingMore) {
-      scrollToBottom()
+    if (messages.length > 0) {
+      scrollToBottom();
     }
-  }, [messages, isLoadingMore])
+  }, [messages]);
 
   if (!isOpen) return null
 
@@ -186,21 +160,11 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         theme={config.theme}
       />
 
-      <div ref={messagesContainerRef} onScroll={handleScroll} className="rockship-messages-container">
-        {isLoadingMore && (
-          <div className="rockship-loading">
-            <div className="rockship-loading-dots">
-              <span className="rockship-loading-dot"></span>
-              <span className="rockship-loading-dot"></span>
-              <span className="rockship-loading-dot"></span>
-            </div>
-            <span>Đang tải tin nhắn cũ...</span>
-          </div>
-        )}
+      <div ref={messagesContainerRef} className="rockship-messages-container">
 
         {/* Typing indicator moved to the bottom */}
 
-        {messages.length === 0 && !isLoadingMore ? (
+        {messages.length === 0 && !isLoading ? (
           <div className="rockship-welcome-message">
             <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="currentColor" viewBox="0 0 24 24">
               <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
@@ -217,7 +181,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         )}
         {isLoading && (
           <div className="rockship-loading">
-            <span>Đang trả lời</span>
+            <span>{messages.length === 0 ? "Đang tải tin nhắn" : "Đang trả lời"}</span>
             <div className="rockship-loading-dots">
               <span className="rockship-loading-dot"></span>
               <span className="rockship-loading-dot"></span>

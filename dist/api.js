@@ -42,26 +42,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatbotAPI = void 0;
 var axios_1 = __importDefault(require("axios"));
 var ChatbotAPI = /** @class */ (function () {
-    function ChatbotAPI(baseURL) {
-        if (baseURL === void 0) { baseURL = 'https://cyhome.rockship.xyz/api/v1'; }
+    function ChatbotAPI(authToken, baseURL) {
+        if (baseURL === void 0) { baseURL = 'https://bot.rockship.xyz/api/v1'; }
+        this.authToken = authToken;
         this.api = axios_1.default.create({
             baseURL: baseURL,
             timeout: 30000,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer ".concat(authToken)
             }
         });
     }
-    ChatbotAPI.prototype.getMessages = function (platformUserId, cursor) {
+    ChatbotAPI.prototype.getMessages = function (platformUserId) {
         return __awaiter(this, void 0, void 0, function () {
-            var url, response;
+            var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        url = cursor
-                            ? "/message/".concat(platformUserId, "?cursor=").concat(cursor)
-                            : "/message/".concat(platformUserId);
-                        return [4 /*yield*/, this.api.get(url)];
+                    case 0: return [4 /*yield*/, this.api.get("/rockship/list-message/".concat(platformUserId))];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];
@@ -74,7 +72,7 @@ var ChatbotAPI = /** @class */ (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.api.post('/cyhome/invoke', {
+                    case 0: return [4 /*yield*/, this.api.post('/rockship/website', {
                             message: message,
                             user_name: userName,
                             platform_user_id: platformUserId
@@ -91,7 +89,7 @@ var ChatbotAPI = /** @class */ (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.api.get("/conversation/".concat(platformUserId))];
+                    case 0: return [4 /*yield*/, this.api.get("/rockship/get-conversation/".concat(platformUserId))];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];
@@ -99,12 +97,12 @@ var ChatbotAPI = /** @class */ (function () {
             });
         });
     };
-    ChatbotAPI.prototype.clearConversation = function (conversationId) {
+    ChatbotAPI.prototype.clearConversation = function (platformUserId) {
         return __awaiter(this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.api.delete("/conversation/".concat(conversationId))];
+                    case 0: return [4 /*yield*/, this.api.delete("/rockship/delete-conversation/".concat(platformUserId))];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];

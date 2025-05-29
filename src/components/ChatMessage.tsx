@@ -1,4 +1,5 @@
 import React from "react"
+import ReactMarkdown from "react-markdown"
 import { Message } from "../types"
 
 interface ChatMessageProps {
@@ -32,7 +33,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, theme }) => {
             borderColor: !isUser ? "#e9ecef" : "transparent",
           }}
         >
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+          {isUser ? (
+            <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+          ) : (
+            <div className="text-sm leading-relaxed markdown-content">
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
+          )}
         </div>
         <div className={`text-xs text-gray-500 mt-1 ${isUser ? "text-right" : "text-left"}`}>
           {formatTime(message.created_at)}
