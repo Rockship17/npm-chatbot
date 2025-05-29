@@ -1,7 +1,7 @@
 {
-  "name": "cyhome-chatbot-sdk",
-  "version": "1.0.1",
-  "description": "CyHome Chatbot SDK for web integration",
+  "name": "rockship-chatbot-sdk",
+  "version": "1.0.0",
+  "description": "Rockship Chatbot SDK for web integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -20,13 +20,13 @@
     "widget",
     "cyhome"
   ],
-  "author": "CyHome Team",
+  "author": "Rockship Team",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/rockship/cyhome-chatbot-sdk.git"
   },
-  "homepage": "https://cyhome.rockship.xyz",
+  "homepage": "https://rockship.co",
   "devDependencies": {
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
@@ -37,8 +37,8 @@
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "dependencies": {
     "axios": "^1.9.0"
