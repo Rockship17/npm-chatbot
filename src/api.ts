@@ -45,8 +45,8 @@ export class ChatbotAPI {
         return response.data;
     }
 
-    async clearConversation(platformUserId: string): Promise<ClearConversationResponse> {
-        const response = await this.api.delete<ClearConversationResponse>(`/rockship/delete-conversation/${platformUserId}`);
+    async clearConversation(conversationId: string): Promise<ClearConversationResponse> {
+        const response = await this.api.delete<ClearConversationResponse>(`/rockship/delete-conversation/${conversationId}`);
         return response.data;
     }
 }

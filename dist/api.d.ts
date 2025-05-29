@@ -6,5 +6,5 @@ export declare class ChatbotAPI {
     getMessages(platformUserId: string): Promise<MessageResponse>;
     sendMessage(message: string, userName: string, platformUserId: string): Promise<ChatResponse>;
     getConversation(platformUserId: string): Promise<ConversationResponse>;
-    clearConversation(platformUserId: string): Promise<ClearConversationResponse>;
+    clearConversation(conversationId: string): Promise<ClearConversationResponse>;
 }
