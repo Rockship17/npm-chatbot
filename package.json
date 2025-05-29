@@ -1,34 +1,46 @@
 {
-    "name": "wolf4dev-cyhome-chatbot",
-    "version": "1.0.0",
-    "type": "module",
-    "description": "A chatbot SDK for CyHome integration with draggable UI",
-    "main": "dist/index.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts",
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "rollup -c",
-        "dev": "rollup -c -w",
-        "prepublishOnly": "npm run build"
-    },
-    "keywords": [
-        "chatbot",
-        "cyhome",
-        "sdk",
-        "chat",
-        "ui"
-    ],
-    "author": "CyHome",
-    "license": "MIT",
-    "devDependencies": {
-        "@rollup/plugin-commonjs": "^25.0.0",
-        "@rollup/plugin-node-resolve": "^15.0.0",
-        "@rollup/plugin-typescript": "^11.0.0",
-        "rollup": "^3.0.0",
-        "tslib": "^2.8.1",
-        "typescript": "^5.0.0"
-    }
+  "name": "cyhome-chatbot-sdk",
+  "version": "1.0.0",
+  "description": "CyHome Chatbot SDK for web integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && npm run build:css",
+    "build:css": "postcss src/styles.css -o dist/styles.css",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "chatbot",
+    "sdk",
+    "chat",
+    "widget",
+    "cyhome"
+  ],
+  "author": "CyHome Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rockship/cyhome-chatbot-sdk.git"
+  },
+  "homepage": "https://cyhome.rockship.xyz",
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "postcss-cli": "^10.0.0",
+    "tailwindcss": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.9.0"
+  }
 }

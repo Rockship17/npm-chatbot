@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
-    "module": "ESNext",
-    "lib": ["DOM", "ES2018"],
+    "target": "es5",
+    "module": "commonjs",
+    "lib": ["dom", "es2015"],
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "./src",
@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
     "moduleResolution": "node"
   },
   "include": ["src/**/*"],

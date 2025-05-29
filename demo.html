@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyHome Chatbot Demo</title>
+    <link rel="stylesheet" href="dist/styles.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .demo-controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        button {
+            padding: 8px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0069d9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CyHome Chatbot Demo</h1>
+        
+        <div class="demo-controls">
+            <h3>Điều khiển chatbot</h3>
+            <button id="open-chat">Mở Chatbot</button>
+            <button id="close-chat">Đóng Chatbot</button>
+            <button id="clear-chat">Xóa tin nhắn</button>
+        </div>
+    </div>
+
+    <script src="dist/index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khởi tạo chatbot
+            const chatbot = new CyHomeChatbotSDK({
+                platformUserId: "user_demo_123",
+                userName: "Người dùng Demo",
+                apiBaseUrl: "https://cyhome.rockship.xyz/api/v1",
+                theme: {
+                    primaryColor: "#007bff",
+                    secondaryColor: "#6c757d",
+                    textColor: "#212529",
+                    backgroundColor: "#ffffff"
+                }
+            });
+            
+            // Hiển thị chatbot
+            chatbot.init();
+            
+            // Thêm các sự kiện điều khiển
+            document.getElementById('open-chat').addEventListener('click', function() {
+                chatbot.open();
+            });
+            
+            document.getElementById('close-chat').addEventListener('click', function() {
+                chatbot.close();
+            });
+            
+            document.getElementById('clear-chat').addEventListener('click', function() {
+                // Nếu chatbot có hàm clearConversation
+                if (chatbot.clearConversation) {
+                    chatbot.clearConversation();
+                } else {
+                    console.log('Chức năng xóa cuộc trò chuyện không khả dụng');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,173 +1,385 @@
 # CyHome Chatbot SDK
 
-A lightweight, customizable chatbot SDK for CyHome integration with draggable UI.
+Một SDK JavaScript/TypeScript để tích hợp chatbot CyHome vào website của bạn một cách dễ dàng
 
-## Features
+## Tính năng
 
-- 🎯 Easy integration with any website
-- 🎨 Customizable themes and styling
-- 📱 Responsive design
-- 🔄 Drag and drop floating button (vertical only)
-- 💬 Real-time messaging
-- 🗑️ Clear conversation functionality
-- 📦 TypeScript support
+- 🚀 Dễ dàng tích hợp với chỉ vài dòng code
+- 💬 Giao diện chat hiện đại và responsive
+- 🎨 Có thể tùy chỉnh theme và vị trí
+- 📱 Hỗ trợ mobile và desktop
+- 🔄 Tự động load tin nhắn cũ khi scroll lên
+- 🗑️ Chức năng xóa cuộc trò chuyện
+- ⚡ Được viết bằng TypeScript với type safety
 
-## Installation
+## Cài đặt
 
 ```bash
 npm install cyhome-chatbot-sdk
 ```
 
-## Usage
+hoặc
 
-### ES6 Modules
-```javascript
-import CyHomeChatbot from 'cyhome-chatbot-sdk';
-
-const chatbot = new CyHomeChatbot({
-  userId: 'your-user-id',
-  userName: 'User Name',
-  theme: {
-    primaryColor: '#007bff',
-    backgroundColor: '#ffffff'
-  },
-  position: {
-    right: '20px',
-    bottom: '20px'
-  }
-});
+```bash
+yarn add cyhome-chatbot-sdk
 ```
 
-### UMD (Script tag)
-```html
-<script src="https://unpkg.com/cyhome-chatbot-sdk/dist/index.umd.js"></script>
-<script>
-  const chatbot = new CyHomeChatbot({
-    userId: 'your-user-id',
-    userName: 'User Name'
-  });
-</script>
-```
+## Sử dụng
 
-### Auto-initialization
-```html
-<script>
-  window.CyHomeChatbotConfig = {
-    userId: 'your-user-id',
-    userName: 'User Name',
-    theme: {
-      primaryColor: '#28a745'
-    }
-  };
-</script>
-<script src="https://unpkg.com/cyhome-chatbot-sdk/dist/index.umd.js"></script>
-```
+### Tích hợp cơ bản
 
-## Configuration
-
-| Option | Type | Required | Default | Description |
-|--------|------|----------|---------|-------------|
-| userId | string | ✅ | - | User ID for API calls |
-| userName | string | ✅ | - | Display name for user |
-| apiBaseUrl | string | ❌ | 'https://cyhome.rockship.xyz/api/v1' | Base URL for API |
-| theme.primaryColor | string | ❌ | '#007bff' | Primary color |
-| theme.backgroundColor | string | ❌ | '#ffffff' | Background color |
-| theme.textColor | string | ❌ | '#333333' | Text color |
-| position.right | string | ❌ | '20px' | Right position |
-| position.bottom | string | ❌ | '20px' | Bottom position |
-
-## API Methods
-
-```javascript
-const chatbot = new CyHomeChatbot(config);
-
-// Open chat programmatically
-chatbot.open();
-
-// Close chat programmatically
-chatbot.close();
-
-// Update theme
-chatbot.setTheme({
-  primaryColor: '#ff6b6b'
-});
-
-// Destroy chatbot
-chatbot.destroy();
-```
-
-## Examples
-
-### Basic Setup
 ```html
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyHome Chatbot Demo</title>
+    <!-- Nhúng CSS của chatbot -->
+    <link rel="stylesheet" href="node_modules/cyhome-chatbot-sdk/dist/styles.css">
 </head>
 <body>
-    <h1>My Website</h1>
+    <!-- Nội dung trang web của bạn -->
     
+    <!-- Nhúng script của chatbot -->
+    <script src="node_modules/cyhome-chatbot-sdk/dist/index.js"></script>
     <script>
-        window.CyHomeChatbotConfig = {
-            userId: '12345',
-            userName: 'thiep'
-        };
+        // Khởi tạo chatbot
+        const chatbot = new CyHomeChatbotSDK({
+            platformUserId: "123", // ID của người dùng (bắt buộc)
+            userName: "rockship",     // Tên hiển thị của người dùng
+            apiBaseUrl: "https://cyhome.rockship.xyz/api/v1", // URL của API
+            theme: {
+                primaryColor: "#007bff",     // Màu chủ đạo
+                secondaryColor: "#6c757d",  // Màu phụ
+                textColor: "#212529",       // Màu chữ
+                backgroundColor: "#ffffff"   // Màu nền
+            }
+        });
+        
+        // Hiển thị chatbot
+        chatbot.init();
     </script>
-    <script src="https://unpkg.com/cyhome-chatbot-sdk/dist/index.umd.js"></script>
 </body>
 </html>
 ```
 
-### Custom Theme
+### Sử dụng với React
+
+```jsx
+import React, { useEffect } from 'react';
+import { CyHomeChatbotSDK } from 'cyhome-chatbot-sdk';
+import 'cyhome-chatbot-sdk/dist/styles.css';
+
+function App() {
+  useEffect(() => {
+    // Khởi tạo chatbot khi component mount
+    const chatbot = new CyHomeChatbotSDK({
+      platformUserId: "123",
+      userName: "rockship",
+      apiBaseUrl: "https://cyhome.rockship.xyz/api/v1",
+      theme: {
+        primaryColor: "#007bff",
+        secondaryColor: "#6c757d",
+        textColor: "#212529",
+        backgroundColor: "#ffffff"
+      }
+    });
+    
+    // Hiển thị chatbot
+    chatbot.init();
+    
+    // Clean up khi component unmount
+    return () => {
+      chatbot.destroy();
+    };
+  }, []);
+
+  return (
+    <div className="App">
+      {/* Nội dung ứng dụng của bạn */}
+    </div>
+  );
+}
+
+export default App;
+```
+
+### Tùy chỉnh nâng cao
+
 ```javascript
-const chatbot = new CyHomeChatbot({
-  userId: '12345',
-  userName: 'thiep',
+const chatbot = new CyHomeChatbotSDK({
+  platformUserId: "123",
+  userName: "rockship",
+  apiBaseUrl: "https://cyhome.rockship.xyz/api/v1",
   theme: {
-    primaryColor: '#ff6b6b',
-    backgroundColor: '#f8f9fa',
-    textColor: '#2c3e50'
+    primaryColor: "#007bff",
+    secondaryColor: "#6c757d",
+    textColor: "#212529",
+    backgroundColor: "#ffffff"
   },
   position: {
-    right: '30px',
-    bottom: '30px'
+    bottom: "20px",
+    right: "20px"
+  },
+  welcomeMessage: "Xin chào! Tôi có thể giúp gì cho bạn?",
+  placeholder: "Nhập tin nhắn của bạn...",
+  botName: "CyHome Chatbot",
+  botAvatar: "https://example.com/bot-avatar.png"
+});
+```
+
+```bash
+yarn add cyhome-chatbot-sdk
+```
+
+### Cách 1: Sử dụng SDK Class (Recommended)
+
+```javascript
+import CyHomeChatbotSDK from 'cyhome-chatbot-sdk';
+
+// Khởi tạo chatbot
+const chatbot = new CyHomeChatbotSDK({
+  userName: 'rockship',
+  platformUserId: '123',
+  apiBaseUrl: 'https://cyhome.rockship.xyz/api/v1', // optional
+  position: 'bottom-right', // optional
+  theme: {
+    primaryColor: '#007bff',
+    backgroundColor: '#f8f9fa',
+    textColor: '#333'
+  },
+  welcomeMessage: 'Chào mừng bạn đến với CyHome Support!'
+});
+
+// Khởi tạo chatbot
+chatbot.init();
+
+// Hoặc khởi tạo trong một container cụ thể
+chatbot.init('my-chatbot-container');
+```
+
+### Cách 2: Sử dụng React Component trực tiếp
+
+```jsx
+import React from 'react';
+import { Chatbot } from 'cyhome-chatbot-sdk';
+
+function App() {
+  const config = {
+    userName: 'rockship',
+    platformUserId: '123',
+    position: 'bottom-right',
+    theme: {
+      primaryColor: '#007bff',
+      backgroundColor: '#f8f9fa',
+      textColor: '#333'
+    }
+  };
+
+  return (
+    <div>
+      <h1>My Website</h1>
+      <Chatbot config={config} />
+    </div>
+  );
+}
+```
+
+### Cách 3: Sử dụng qua CDN (Browser)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/cyhome-chatbot-sdk/dist/index.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h1>My Website</h1>
+    </div>
+
+    <script>
+        // Khởi tạo chatbot
+        const chatbot = new window.CyHomeChatbotSDK({
+            userName: 'rockship',
+            platformUserId: '123',
+            position: 'bottom-right',
+            theme: {
+                primaryColor: '#007bff',
+                backgroundColor: '#f8f9fa',
+                textColor: '#333'
+            }
+        });
+
+        chatbot.init();
+    </script>
+</body>
+</html>
+```
+
+## Cấu hình
+
+### ChatbotConfig
+
+```typescript
+interface ChatbotConfig {
+  userName: string;                    // Tên người dùng (bắt buộc)
+  platformUserId: string;              // ID người dùng trên platform (bắt buộc)
+  apiBaseUrl?: string;                 // URL API base (mặc định: https://cyhome.rockship.xyz/api/v1)
+  theme?: {                            // Tùy chỉnh theme
+    primaryColor?: string;             // Màu chính (mặc định: #007bff)
+    backgroundColor?: string;          // Màu nền (mặc định: #f8f9fa)
+    textColor?: string;               // Màu chữ (mặc định: #333)
+  };
+  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'; // Vị trí (mặc định: bottom-right)
+  welcomeMessage?: string;            // Tin nhắn chào mừng
+}
+```
+
+## API Methods (SDK Class)
+
+### `init(containerId?: string)`
+Khởi tạo chatbot. Nếu không truyền `containerId`, chatbot sẽ được thêm vào body.
+
+### `updateConfig(newConfig: Partial<ChatbotConfig>)`
+Cập nhật cấu hình chatbot.
+
+```javascript
+chatbot.updateConfig({
+  theme: {
+    primaryColor: '#28a745'
   }
 });
 ```
 
-## Development
+### `destroy()`
+Hủy chatbot và cleanup resources.
 
-```bash
-# Install dependencies
-npm install
-
-# Start development
-npm run dev
-
-# Build for production
-npm run build
-
-# Publish to npm
-npm publish
+```javascript
+chatbot.destroy();
 ```
 
-## API Integration
+### `getConfig()`
+Lấy cấu hình hiện tại.
 
-The SDK integrates with CyHome APIs:
+```javascript
+const currentConfig = chatbot.getConfig();
+```
 
-- **Send Message**: `POST /api/v1/cyhome/invoke`
-- **Get Messages**: `GET /api/v1/message/:customer_id`
-- **Get Conversation**: `GET /api/v1/conversation/:customer_id`
-- **Clear Conversation**: `DELETE /api/v1/conversation/:conversation_id`
+## Ví dụ nâng cao
+
+### Tùy chỉnh theme dark mode
+
+```javascript
+const darkThemeChatbot = new CyHomeChatbotSDK({
+  userName: 'User',
+  platformUserId: 'user123',
+  theme: {
+    primaryColor: '#6366f1',
+    backgroundColor: '#1f2937',
+    textColor: '#f9fafb'
+  },
+  position: 'bottom-left'
+});
+
+darkThemeChatbot.init();
+```
+
+### Sử dụng với framework khác (Vue.js)
+
+```vue
+<template>
+  <div>
+    <h1>My Vue App</h1>
+    <div id="chatbot-container"></div>
+  </div>
+</template>
+
+<script>
+import CyHomeChatbotSDK from 'cyhome-chatbot-sdk';
+
+export default {
+  name: 'App',
+  mounted() {
+    this.chatbot = new CyHomeChatbotSDK({
+      userName: 'Vue User',
+      platformUserId: 'vue-user-123'
+    });
+    
+    this.chatbot.init('chatbot-container');
+  },
+  beforeUnmount() {
+    if (this.chatbot) {
+      this.chatbot.destroy();
+    }
+  }
+}
+</script>
+```
+
+## API Endpoints sử dụng
+
+SDK sử dụng các API endpoints sau:
+
+- `GET /api/v1/message/:platform_user_id` - Lấy danh sách tin nhắn
+- `POST /api/v1/cyhome/invoke` - Gửi tin nhắn mới
+- `GET /api/v1/conversation/:platform_user_id` - Lấy thông tin conversation
+- `DELETE /api/v1/conversation/:conversation_id` - Xóa conversation
+
+## Development
+
+### Build từ source
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd cyhome-chatbot-sdk
+
+# Cài đặt dependencies
+npm install
+
+# Build
+npm run build
+
+# Watch mode
+npm run dev
+```
+
+### Publish to NPM
+
+```bash
+# Build trước khi publish
+npm run build
+
+# Login to NPM
+npm login
+
+# Publish
+npm publish
+```
 
 ## Browser Support
 
 - Chrome 60+
-- Firefox 55+
+- Firefox 60+
 - Safari 12+
 - Edge 79+
 
 ## License
 
 MIT
+
+## Contributing
+
+1. Fork repository
+2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Tạo Pull Request
+
+## Support
+
+Nếu bạn gặp vấn đề, vui lòng tạo issue trên GitHub repository.
