@@ -8,10 +8,12 @@ import { ChatInput } from "./ChatInput"
 interface ChatWidgetProps {
   config: ChatbotConfig
   isOpen: boolean
+  isMinimized: boolean
   onClose: () => void
+  onMinimize: () => void
 }
 
-export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, onClose }) => {
+export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimized, onClose, onMinimize }) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
@@ -157,6 +159,9 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, onClose 
   }, [messages, isLoadingMore])
 
   if (!isOpen) return null
+  
+  // Không hiển thị nội dung chat khi ở chế độ thu nhỏ
+  if (isMinimized) return null
 
   const position = config.position || "bottom-right"
   const positionClasses = {
@@ -168,8 +173,10 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, onClose 
 
   return (
     <div
-      className={`fixed ${positionClasses[position]} w-80 h-96 bg-white rounded-lg shadow-2xl border flex flex-col z-50`}
-      style={{ maxHeight: "500px" }}
+      className={`cyhome-chatbox ${isOpen ? 'open' : ''} fixed ${positionClasses[position]}`}
+      style={{
+        backgroundColor: config.theme?.backgroundColor || "#ffffff",
+      }}
     >
       <ChatHeader
         userName={config.userName}
@@ -182,47 +189,37 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, onClose 
       <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-4 bg-gray-50"
-        style={{ minHeight: 0 }}
+        className="cyhome-messages-container"
       >
         {isLoadingMore && (
-          <div className="text-center py-2">
-            <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeDasharray="32"
-                  strokeDashoffset="32"
-                >
-                  <animate
-                    attributeName="stroke-dasharray"
-                    dur="2s"
-                    values="0 32;16 16;0 32;0 32"
-                    repeatCount="indefinite"
-                  />
-                  <animate attributeName="stroke-dashoffset" dur="2s" values="0;-16;-32;-32" repeatCount="indefinite" />
-                </circle>
-              </svg>
-              Đang tải tin nhắn cũ...
+          <div className="cyhome-loading">
+            <div className="cyhome-loading-dots">
+              <span className="cyhome-loading-dot"></span>
+              <span className="cyhome-loading-dot"></span>
+              <span className="cyhome-loading-dot"></span>
             </div>
+            <span>Đang tải tin nhắn cũ...</span>
+          </div>
+        )}
+        
+        {isLoading && (
+          <div className="cyhome-loading">
+            <div className="cyhome-loading-dots">
+              <span className="cyhome-loading-dot"></span>
+              <span className="cyhome-loading-dot"></span>
+              <span className="cyhome-loading-dot"></span>
+            </div>
+            <span>Đang nhập...</span>
           </div>
         )}
 
         {messages.length === 0 && !isLoadingMore ? (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            <div className="text-center">
-              <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-              </svg>
-              <p className="text-sm">{config.welcomeMessage || "Chào mừng bạn đến với CyHome Support!"}</p>
-              <p className="text-xs mt-1 opacity-75">Hãy gửi tin nhắn để bắt đầu trò chuyện</p>
-            </div>
+          <div className="cyhome-welcome-message">
+            <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+            </svg>
+            <p className="text-base">{config.welcomeMessage || "Chào mừng bạn đến với CyHome Support!"}</p>
+            <p className="text-sm mt-2 opacity-75">Hãy gửi tin nhắn để bắt đầu trò chuyện</p>
           </div>
         ) : (
           <>

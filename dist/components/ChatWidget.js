@@ -53,15 +53,16 @@ var ChatHeader_1 = require("./ChatHeader");
 var ChatMessage_1 = require("./ChatMessage");
 var ChatInput_1 = require("./ChatInput");
 var ChatWidget = function (_a) {
-    var config = _a.config, isOpen = _a.isOpen, onClose = _a.onClose;
-    var _b = (0, react_1.useState)([]), messages = _b[0], setMessages = _b[1];
-    var _c = (0, react_1.useState)(false), isLoading = _c[0], setIsLoading = _c[1];
-    var _d = (0, react_1.useState)(false), isClearing = _d[0], setIsClearing = _d[1];
-    var _e = (0, react_1.useState)(null), conversationId = _e[0], setConversationId = _e[1];
-    var _f = (0, react_1.useState)(""), cursor = _f[0], setCursor = _f[1];
-    var _g = (0, react_1.useState)(true), hasMore = _g[0], setHasMore = _g[1];
-    var _h = (0, react_1.useState)(false), isLoadingMore = _h[0], setIsLoadingMore = _h[1];
-    var _j = (0, react_1.useState)(false), initialized = _j[0], setInitialized = _j[1];
+    var _b;
+    var config = _a.config, isOpen = _a.isOpen, isMinimized = _a.isMinimized, onClose = _a.onClose, onMinimize = _a.onMinimize;
+    var _c = (0, react_1.useState)([]), messages = _c[0], setMessages = _c[1];
+    var _d = (0, react_1.useState)(false), isLoading = _d[0], setIsLoading = _d[1];
+    var _e = (0, react_1.useState)(false), isClearing = _e[0], setIsClearing = _e[1];
+    var _f = (0, react_1.useState)(null), conversationId = _f[0], setConversationId = _f[1];
+    var _g = (0, react_1.useState)(""), cursor = _g[0], setCursor = _g[1];
+    var _h = (0, react_1.useState)(true), hasMore = _h[0], setHasMore = _h[1];
+    var _j = (0, react_1.useState)(false), isLoadingMore = _j[0], setIsLoadingMore = _j[1];
+    var _k = (0, react_1.useState)(false), initialized = _k[0], setInitialized = _k[1];
     var messagesEndRef = (0, react_1.useRef)(null);
     var messagesContainerRef = (0, react_1.useRef)(null);
     var api = (0, react_1.useRef)(new api_1.ChatbotAPI(config.apiBaseUrl));
@@ -231,6 +232,9 @@ var ChatWidget = function (_a) {
     }, [messages, isLoadingMore]);
     if (!isOpen)
         return null;
+    // Không hiển thị nội dung chat khi ở chế độ thu nhỏ
+    if (isMinimized)
+        return null;
     var position = config.position || "bottom-right";
     var positionClasses = {
         "bottom-right": "bottom-20 right-4",
@@ -238,6 +242,8 @@ var ChatWidget = function (_a) {
         "top-right": "top-4 right-4",
         "top-left": "top-4 left-4",
     };
-    return ((0, jsx_runtime_1.jsxs)("div", { className: "fixed ".concat(positionClasses[position], " w-80 h-96 bg-white rounded-lg shadow-2xl border flex flex-col z-50"), style: { maxHeight: "500px" }, children: [(0, jsx_runtime_1.jsx)(ChatHeader_1.ChatHeader, { userName: config.userName, onClose: onClose, onClear: handleClearConversation, isClearing: isClearing, theme: config.theme }), (0, jsx_runtime_1.jsxs)("div", { ref: messagesContainerRef, onScroll: handleScroll, className: "flex-1 overflow-y-auto p-4 bg-gray-50", style: { minHeight: 0 }, children: [isLoadingMore && ((0, jsx_runtime_1.jsx)("div", { className: "text-center py-2", children: (0, jsx_runtime_1.jsxs)("div", { className: "inline-flex items-center gap-2 text-sm text-gray-500", children: [(0, jsx_runtime_1.jsx)("svg", { className: "w-4 h-4 animate-spin", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsxs)("circle", { cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "2", fill: "none", strokeLinecap: "round", strokeDasharray: "32", strokeDashoffset: "32", children: [(0, jsx_runtime_1.jsx)("animate", { attributeName: "stroke-dasharray", dur: "2s", values: "0 32;16 16;0 32;0 32", repeatCount: "indefinite" }), (0, jsx_runtime_1.jsx)("animate", { attributeName: "stroke-dashoffset", dur: "2s", values: "0;-16;-32;-32", repeatCount: "indefinite" })] }) }), "\u0110ang t\u1EA3i tin nh\u1EAFn c\u0169..."] }) })), messages.length === 0 && !isLoadingMore ? ((0, jsx_runtime_1.jsx)("div", { className: "flex items-center justify-center h-full text-gray-500", children: (0, jsx_runtime_1.jsxs)("div", { className: "text-center", children: [(0, jsx_runtime_1.jsx)("svg", { className: "w-12 h-12 mx-auto mb-4 opacity-50", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" }) }), (0, jsx_runtime_1.jsx)("p", { className: "text-sm", children: config.welcomeMessage || "Chào mừng bạn đến với CyHome Support!" }), (0, jsx_runtime_1.jsx)("p", { className: "text-xs mt-1 opacity-75", children: "H\u00E3y g\u1EEDi tin nh\u1EAFn \u0111\u1EC3 b\u1EAFt \u0111\u1EA7u tr\u00F2 chuy\u1EC7n" })] }) })) : ((0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: messages.map(function (message) { return ((0, jsx_runtime_1.jsx)(ChatMessage_1.ChatMessage, { message: message, theme: config.theme }, message.id)); }) })), (0, jsx_runtime_1.jsx)("div", { ref: messagesEndRef })] }), (0, jsx_runtime_1.jsx)(ChatInput_1.ChatInput, { onSendMessage: handleSendMessage, isLoading: isLoading, theme: config.theme })] }));
+    return ((0, jsx_runtime_1.jsxs)("div", { className: "cyhome-chatbox ".concat(isOpen ? 'open' : '', " fixed ").concat(positionClasses[position]), style: {
+            backgroundColor: ((_b = config.theme) === null || _b === void 0 ? void 0 : _b.backgroundColor) || "#ffffff",
+        }, children: [(0, jsx_runtime_1.jsx)(ChatHeader_1.ChatHeader, { userName: config.userName, onClose: onClose, onClear: handleClearConversation, isClearing: isClearing, theme: config.theme }), (0, jsx_runtime_1.jsxs)("div", { ref: messagesContainerRef, onScroll: handleScroll, className: "cyhome-messages-container", children: [isLoadingMore && ((0, jsx_runtime_1.jsxs)("div", { className: "cyhome-loading", children: [(0, jsx_runtime_1.jsxs)("div", { className: "cyhome-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "cyhome-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "cyhome-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "cyhome-loading-dot" })] }), (0, jsx_runtime_1.jsx)("span", { children: "\u0110ang t\u1EA3i tin nh\u1EAFn c\u0169..." })] })), isLoading && ((0, jsx_runtime_1.jsxs)("div", { className: "cyhome-loading", children: [(0, jsx_runtime_1.jsxs)("div", { className: "cyhome-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "cyhome-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "cyhome-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "cyhome-loading-dot" })] }), (0, jsx_runtime_1.jsx)("span", { children: "\u0110ang nh\u1EADp..." })] })), messages.length === 0 && !isLoadingMore ? ((0, jsx_runtime_1.jsxs)("div", { className: "cyhome-welcome-message", children: [(0, jsx_runtime_1.jsx)("svg", { className: "w-12 h-12 mx-auto mb-4 opacity-50", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" }) }), (0, jsx_runtime_1.jsx)("p", { className: "text-base", children: config.welcomeMessage || "Chào mừng bạn đến với CyHome Support!" }), (0, jsx_runtime_1.jsx)("p", { className: "text-sm mt-2 opacity-75", children: "H\u00E3y g\u1EEDi tin nh\u1EAFn \u0111\u1EC3 b\u1EAFt \u0111\u1EA7u tr\u00F2 chuy\u1EC7n" })] })) : ((0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: messages.map(function (message) { return ((0, jsx_runtime_1.jsx)(ChatMessage_1.ChatMessage, { message: message, theme: config.theme }, message.id)); }) })), (0, jsx_runtime_1.jsx)("div", { ref: messagesEndRef })] }), (0, jsx_runtime_1.jsx)(ChatInput_1.ChatInput, { onSendMessage: handleSendMessage, isLoading: isLoading, theme: config.theme })] }));
 };
 exports.ChatWidget = ChatWidget;

@@ -8,6 +8,7 @@ var ChatWidget_1 = require("./ChatWidget");
 var Chatbot = function (_a) {
     var config = _a.config;
     var _b = (0, react_1.useState)(false), isOpen = _b[0], setIsOpen = _b[1];
+    var _c = (0, react_1.useState)(false), isMinimized = _c[0], setIsMinimized = _c[1];
     // Inject styles when component mounts
     (0, react_1.useEffect)(function () {
         var styleId = "cyhome-chatbot-styles";
@@ -19,11 +20,22 @@ var Chatbot = function (_a) {
         }
     }, []);
     var toggleChat = function () {
-        setIsOpen(!isOpen);
+        if (isMinimized) {
+            // Nếu đang ở trạng thái thu nhỏ, click vào button sẽ mở rộng lại
+            setIsMinimized(false);
+        }
+        else {
+            // Nếu không ở trạng thái thu nhỏ, sẽ toggle mở/đóng chat
+            setIsOpen(!isOpen);
+        }
     };
     var closeChat = function () {
         setIsOpen(false);
+        setIsMinimized(false);
     };
-    return ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(ChatButton_1.ChatButton, { onClick: toggleChat, isOpen: isOpen, config: config }), (0, jsx_runtime_1.jsx)(ChatWidget_1.ChatWidget, { config: config, isOpen: isOpen, onClose: closeChat })] }));
+    var minimizeChat = function () {
+        setIsMinimized(true);
+    };
+    return ((0, jsx_runtime_1.jsxs)("div", { className: "cyhome-chatbot-container ".concat(isMinimized ? 'minimized' : ''), children: [(0, jsx_runtime_1.jsx)(ChatButton_1.ChatButton, { onClick: toggleChat, isOpen: isOpen, isMinimized: isMinimized, onMinimize: minimizeChat, config: config }), (0, jsx_runtime_1.jsx)(ChatWidget_1.ChatWidget, { config: config, isOpen: isOpen, isMinimized: isMinimized, onClose: closeChat, onMinimize: minimizeChat })] }));
 };
 exports.Chatbot = Chatbot;

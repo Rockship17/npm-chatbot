@@ -9,6 +9,7 @@ interface ChatbotProps {
 
 export const Chatbot: React.FC<ChatbotProps> = ({ config }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [isMinimized, setIsMinimized] = useState(false)
 
   // Inject styles when component mounts
   useEffect(() => {
@@ -66,17 +67,40 @@ export const Chatbot: React.FC<ChatbotProps> = ({ config }) => {
   }, [])
 
   const toggleChat = () => {
-    setIsOpen(!isOpen)
+    if (isMinimized) {
+      // Nếu đang ở trạng thái thu nhỏ, click vào button sẽ mở rộng lại
+      setIsMinimized(false)
+    } else {
+      // Nếu không ở trạng thái thu nhỏ, sẽ toggle mở/đóng chat
+      setIsOpen(!isOpen)
+    }
   }
 
   const closeChat = () => {
     setIsOpen(false)
+    setIsMinimized(false)
+  }
+  
+  const minimizeChat = () => {
+    setIsMinimized(true)
   }
 
   return (
-    <>
-      <ChatButton onClick={toggleChat} isOpen={isOpen} config={config} />
-      <ChatWidget config={config} isOpen={isOpen} onClose={closeChat} />
-    </>
+    <div className={`cyhome-chatbot-container ${isMinimized ? 'minimized' : ''}`}>
+      <ChatButton 
+        onClick={toggleChat} 
+        isOpen={isOpen} 
+        isMinimized={isMinimized}
+        onMinimize={minimizeChat}
+        config={config} 
+      />
+      <ChatWidget 
+        config={config} 
+        isOpen={isOpen} 
+        isMinimized={isMinimized}
+        onClose={closeChat} 
+        onMinimize={minimizeChat}
+      />
+    </div>
   )
 }
