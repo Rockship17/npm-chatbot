@@ -11,7 +11,7 @@ var Chatbot = function (_a) {
     var _c = (0, react_1.useState)(false), isMinimized = _c[0], setIsMinimized = _c[1];
     // Inject styles when component mounts
     (0, react_1.useEffect)(function () {
-        var styleId = "cyhome-chatbot-styles";
+        var styleId = "rockship-chatbot-styles";
         if (!document.getElementById(styleId)) {
             var style = document.createElement("style");
             style.id = styleId;
@@ -36,6 +36,6 @@ var Chatbot = function (_a) {
     var minimizeChat = function () {
         setIsMinimized(true);
     };
-    return ((0, jsx_runtime_1.jsxs)("div", { className: "cyhome-chatbot-container ".concat(isMinimized ? 'minimized' : ''), children: [(0, jsx_runtime_1.jsx)(ChatButton_1.ChatButton, { onClick: toggleChat, isOpen: isOpen, isMinimized: isMinimized, onMinimize: minimizeChat, config: config }), (0, jsx_runtime_1.jsx)(ChatWidget_1.ChatWidget, { config: config, isOpen: isOpen, isMinimized: isMinimized, onClose: closeChat, onMinimize: minimizeChat })] }));
+    return ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-chatbot-container ".concat(isMinimized ? 'minimized' : ''), children: [(0, jsx_runtime_1.jsx)(ChatButton_1.ChatButton, { onClick: toggleChat, isOpen: isOpen, isMinimized: isMinimized, onMinimize: minimizeChat, config: config }), (0, jsx_runtime_1.jsx)(ChatWidget_1.ChatWidget, { config: config, isOpen: isOpen, isMinimized: isMinimized, onClose: closeChat, onMinimize: minimizeChat })] }));
 };
 exports.Chatbot = Chatbot;

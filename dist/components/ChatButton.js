@@ -46,18 +46,31 @@ var ChatButton = function (_a) {
     var handleMouseMove = function (e) {
         if (isDragging && buttonTop !== null) {
             var deltaY = e.clientY - initialPos.y;
+            var deltaX = e.clientX - initialPos.x;
             var newTop = Math.max(16, Math.min(window.innerHeight - 80, buttonTop + deltaY));
             setButtonTop(newTop);
-            setPosition(__assign(__assign({}, position), { y: deltaY }));
+            // Update both X and Y positions for more natural drag movement
+            setPosition({
+                x: position.x + deltaX,
+                y: position.y + deltaY
+            });
+            // Update initial position for next movement calculation
+            setInitialPos({
+                x: e.clientX,
+                y: e.clientY
+            });
         }
     };
-    var handleMouseUp = function () {
+    var handleMouseUp = function (e) {
         if (isDragging) {
             setIsDragging(false);
             // Cập nhật vị trí ban đầu sau khi kéo
             if (buttonTop !== null) {
                 setInitialPos(__assign(__assign({}, initialPos), { y: buttonTop }));
             }
+            // Prevent the click event from firing after drag ends
+            e.stopPropagation();
+            e.preventDefault();
         }
     };
     // Đăng ký/hủy đăng ký sự kiện
@@ -71,8 +84,18 @@ var ChatButton = function (_a) {
             document.removeEventListener('mouseup', handleMouseUp);
         };
     }, [isDragging, initialPos, buttonTop]);
-    return ((0, jsx_runtime_1.jsxs)("div", { className: "fixed z-40", style: { right: configPosition.includes('right') ? '16px' : 'auto', left: configPosition.includes('left') ? '16px' : 'auto', top: buttonTop !== null && buttonTop !== void 0 ? buttonTop : 'auto' }, children: [isOpen && !isMinimized && ((0, jsx_runtime_1.jsx)("button", { onClick: onMinimize, className: "absolute -top-10 right-0 bg-white/80 backdrop-blur-sm p-1 rounded-full shadow-md hover:bg-white transition-all duration-200", title: "Thu nh\u1ECF", children: (0, jsx_runtime_1.jsx)("svg", { className: "w-5 h-5 text-gray-600", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg", children: (0, jsx_runtime_1.jsx)("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M19 9l-7 7-7-7" }) }) })), (0, jsx_runtime_1.jsx)("button", { ref: buttonRef, onClick: onClick, onMouseDown: handleMouseDown, className: "cyhome-floating-button ".concat(isMinimized ? 'minimized' : isOpen ? '' : 'hoverable', " ").concat(isDragging ? 'dragging' : '', " ").concat(isOpen && !isMinimized ? 'rotate-45' : '', " ").concat(isMinimized && isOpen ? 'expanding' : ''), style: {
+    return ((0, jsx_runtime_1.jsxs)("div", { className: "fixed z-40", style: {
+            right: isMinimized ? '0' : configPosition.includes('right') ? '16px' : 'auto',
+            left: configPosition.includes('left') ? '16px' : 'auto',
+            top: buttonTop !== null && buttonTop !== void 0 ? buttonTop : 'auto',
+            transition: 'right 0.3s ease'
+        }, children: [!isOpen && ((0, jsx_runtime_1.jsx)("button", { onClick: onMinimize, className: "absolute -top-6 -right-6 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:bg-white transition-all duration-200 w-5 h-5 flex items-center justify-center z-50", title: "Thu nh\u1ECF v\u1EC1 g\u00F3c ph\u1EA3i", children: (0, jsx_runtime_1.jsx)("svg", { className: "w-3 h-3 text-gray-600", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg", children: (0, jsx_runtime_1.jsx)("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M9 5l7 7-7 7" }) }) })), isMinimized && isOpen && ((0, jsx_runtime_1.jsx)("button", { onClick: function () { return onMinimize(); }, className: "absolute -top-10 right-0 bg-white/80 backdrop-blur-sm p-1 rounded-full shadow-md hover:bg-white transition-all duration-200", title: "M\u1EDF r\u1ED9ng", children: (0, jsx_runtime_1.jsx)("svg", { className: "w-5 h-5 text-gray-600", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg", children: (0, jsx_runtime_1.jsx)("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M5 15l7-7 7 7" }) }) })), (!isOpen || isMinimized) && ((0, jsx_runtime_1.jsx)("button", { ref: buttonRef, onClick: function (e) {
+                    // Only trigger onClick if not dragging
+                    if (!isDragging) {
+                        onClick();
+                    }
+                }, onMouseDown: handleMouseDown, className: "rockship-floating-button ".concat(isMinimized ? 'minimized' : 'hoverable', " ").concat(isDragging ? 'dragging' : '', " ").concat(isMinimized && isOpen ? 'expanding' : ''), style: {
                     backgroundColor: ((_b = config.theme) === null || _b === void 0 ? void 0 : _b.primaryColor) || "#007bff",
-                }, title: "Chat v\u1EDBi ch\u00FAng t\u00F4i", children: isOpen ? ((0, jsx_runtime_1.jsx)("svg", { className: "w-6 h-6 text-white", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" }) })) : ((0, jsx_runtime_1.jsx)("svg", { className: "w-6 h-6 text-white", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" }) })) })] }));
+                }, title: "Chat v\u1EDBi ch\u00FAng t\u00F4i", children: (0, jsx_runtime_1.jsx)("svg", { className: "w-6 h-6 text-white", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" }) }) }))] }));
 };
 exports.ChatButton = ChatButton;

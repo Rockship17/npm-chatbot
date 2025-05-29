@@ -43,19 +43,33 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
   const handleMouseMove = (e: MouseEvent) => {
     if (isDragging && buttonTop !== null) {
       const deltaY = e.clientY - initialPos.y;
+      const deltaX = e.clientX - initialPos.x;
       const newTop = Math.max(16, Math.min(window.innerHeight - 80, buttonTop + deltaY));
       setButtonTop(newTop);
-      setPosition({ ...position, y: deltaY });
+      // Update both X and Y positions for more natural drag movement
+      setPosition({
+        x: position.x + deltaX,
+        y: position.y + deltaY
+      });
+      // Update initial position for next movement calculation
+      setInitialPos({
+        x: e.clientX,
+        y: e.clientY
+      });
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: MouseEvent) => {
     if (isDragging) {
       setIsDragging(false);
       // Cập nhật vị trí ban đầu sau khi kéo
       if (buttonTop !== null) {
         setInitialPos({ ...initialPos, y: buttonTop });
       }
+      
+      // Prevent the click event from firing after drag ends
+      e.stopPropagation();
+      e.preventDefault();
     }
   };
 
@@ -73,42 +87,63 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
   }, [isDragging, initialPos, buttonTop]);
 
   return (
-    <div className="fixed z-40" style={{ right: configPosition.includes('right') ? '16px' : 'auto', left: configPosition.includes('left') ? '16px' : 'auto', top: buttonTop ?? 'auto' }}>
-      {isOpen && !isMinimized && (
+    <div className="fixed z-40" style={{ 
+      right: isMinimized ? '0' : configPosition.includes('right') ? '16px' : 'auto', 
+      left: configPosition.includes('left') ? '16px' : 'auto', 
+      top: buttonTop ?? 'auto',
+      transition: 'right 0.3s ease'
+    }}>
+      {/* Minimize button always shown when the main button is visible */}
+      {!isOpen && (
         <button 
           onClick={onMinimize}
-          className="absolute -top-10 right-0 bg-white/80 backdrop-blur-sm p-1 rounded-full shadow-md hover:bg-white transition-all duration-200"
-          title="Thu nhỏ"
+          className="absolute -top-6 -right-6 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:bg-white transition-all duration-200 w-5 h-5 flex items-center justify-center z-50"
+          title="Thu nhỏ về góc phải"
         >
-          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       )}
-      <button
-        ref={buttonRef}
-        onClick={onClick}
-        onMouseDown={handleMouseDown}
-        className={`cyhome-floating-button ${
-          isMinimized ? 'minimized' : isOpen ? '' : 'hoverable'
-        } ${isDragging ? 'dragging' : ''} ${
-          isOpen && !isMinimized ? 'rotate-45' : ''
-        } ${isMinimized && isOpen ? 'expanding' : ''}`}
-        style={{
-          backgroundColor: config.theme?.primaryColor || "#007bff",
-        }}
-        title="Chat với chúng tôi"
-      >
-        {isOpen ? (
-          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+      
+      {/* Button for minimized state */}
+      {isMinimized && isOpen && (
+        <button 
+          onClick={() => onMinimize()}
+          className="absolute -top-10 right-0 bg-white/80 backdrop-blur-sm p-1 rounded-full shadow-md hover:bg-white transition-all duration-200"
+          title="Mở rộng"
+        >
+          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
           </svg>
-        ) : (
+        </button>
+      )}
+      {/* Main button - only shown when chat is not open or is minimized */}
+      {(!isOpen || isMinimized) && (
+        <button
+          ref={buttonRef}
+          onClick={(e) => {
+            // Only trigger onClick if not dragging
+            if (!isDragging) {
+              onClick();
+            }
+          }}
+          onMouseDown={handleMouseDown}
+          className={`rockship-floating-button ${
+            isMinimized ? 'minimized' : 'hoverable'
+          } ${isDragging ? 'dragging' : ''} ${
+            isMinimized && isOpen ? 'expanding' : ''
+          }`}
+          style={{
+            backgroundColor: config.theme?.primaryColor || "#007bff",
+          }}
+          title="Chat với chúng tôi"
+        >
           <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
             <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" />
           </svg>
-        )}
-      </button>
+        </button>
+      )}
     </div>
   )
 }

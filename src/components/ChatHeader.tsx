@@ -25,7 +25,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, onClose, onCle
           </svg>
         </div>
         <div>
-          <h3 className="font-semibold text-sm">CyHome Support</h3>
+          <h3 className="font-semibold text-sm">Rockship Support</h3>
           <p className="text-xs opacity-90">Xin chào {userName}</p>
         </div>
       </div>

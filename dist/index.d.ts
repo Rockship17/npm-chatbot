@@ -7,7 +7,7 @@ export { ChatInput } from './components/ChatInput';
 export { ChatHeader } from './components/ChatHeader';
 export { ChatbotAPI } from './api';
 export * from './types';
-export declare class CyHomeChatbotSDK {
+export declare class RockshipChatbotSDK {
     private container;
     private root;
     private config;
@@ -17,9 +17,9 @@ export declare class CyHomeChatbotSDK {
     destroy(): void;
     getConfig(): ChatbotConfig;
 }
-export default CyHomeChatbotSDK;
+export default RockshipChatbotSDK;
 declare global {
     interface Window {
-        CyHomeChatbotSDK: typeof CyHomeChatbotSDK;
+        RockshipChatbotSDK: typeof RockshipChatbotSDK;
     }
 }

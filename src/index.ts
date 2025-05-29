@@ -14,7 +14,7 @@ export { ChatbotAPI } from './api';
 export * from './types';
 
 // Main SDK class
-export class CyHomeChatbotSDK {
+export class RockshipChatbotSDK {
     private container: HTMLElement | null = null;
     private root: any = null;
     private config: ChatbotConfig;
@@ -28,7 +28,7 @@ export class CyHomeChatbotSDK {
                 backgroundColor: '#f8f9fa',
                 textColor: '#333'
             },
-            welcomeMessage: 'Chào mừng bạn đến với CyHome Support!',
+            welcomeMessage: 'Chào mừng bạn đến với Rockship Support!',
             ...config
         };
     }
@@ -44,7 +44,7 @@ export class CyHomeChatbotSDK {
                 }
             } else {
                 this.container = document.createElement('div');
-                this.container.id = 'cyhome-chatbot-container';
+                this.container.id = 'rockship-chatbot-container';
                 document.body.appendChild(this.container);
             }
 
@@ -60,7 +60,7 @@ export class CyHomeChatbotSDK {
                 );
             }
         } catch (error) {
-            console.error('CyHome Chatbot SDK initialization failed:', error);
+            console.error('Rockship Chatbot SDK initialization failed:', error);
         }
     }
 
@@ -79,7 +79,7 @@ export class CyHomeChatbotSDK {
             this.root.unmount();
         }
 
-        if (this.container && this.container.id === 'cyhome-chatbot-container') {
+        if (this.container && this.container.id === 'rockship-chatbot-container') {
             document.body.removeChild(this.container);
         }
 
@@ -94,16 +94,16 @@ export class CyHomeChatbotSDK {
 }
 
 // Default export
-export default CyHomeChatbotSDK;
+export default RockshipChatbotSDK;
 
 // Global window object for browser usage
 declare global {
     interface Window {
-        CyHomeChatbotSDK: typeof CyHomeChatbotSDK;
+        RockshipChatbotSDK: typeof RockshipChatbotSDK;
     }
 }
 
 // Auto-attach to window if in browser environment
 if (typeof window !== 'undefined') {
-    window.CyHomeChatbotSDK = CyHomeChatbotSDK;
+    window.RockshipChatbotSDK = RockshipChatbotSDK;
 }

@@ -1,6 +1,6 @@
 {
   "name": "rockship-chatbot-sdk",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Rockship Chatbot SDK for web integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,13 +18,13 @@
     "sdk",
     "chat",
     "widget",
-    "cyhome"
+    "rockship"
   ],
   "author": "Rockship Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rockship/cyhome-chatbot-sdk.git"
+    "url": "https://github.com/rockship/rockship-chatbot-sdk.git"
   },
   "homepage": "https://rockship.co",
   "devDependencies": {

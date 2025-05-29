@@ -28,7 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CyHomeChatbotSDK = exports.ChatbotAPI = exports.ChatHeader = exports.ChatInput = exports.ChatMessage = exports.ChatButton = exports.ChatWidget = exports.Chatbot = void 0;
+exports.RockshipChatbotSDK = exports.ChatbotAPI = exports.ChatHeader = exports.ChatInput = exports.ChatMessage = exports.ChatButton = exports.ChatWidget = exports.Chatbot = void 0;
 var react_1 = __importDefault(require("react"));
 var client_1 = __importDefault(require("react-dom/client"));
 var Chatbot_1 = require("./components/Chatbot");
@@ -49,18 +49,18 @@ var api_1 = require("./api");
 Object.defineProperty(exports, "ChatbotAPI", { enumerable: true, get: function () { return api_1.ChatbotAPI; } });
 __exportStar(require("./types"), exports);
 // Main SDK class
-var CyHomeChatbotSDK = /** @class */ (function () {
-    function CyHomeChatbotSDK(config) {
+var RockshipChatbotSDK = /** @class */ (function () {
+    function RockshipChatbotSDK(config) {
         this.container = null;
         this.root = null;
         this.config = __assign({ apiBaseUrl: 'https://cyhome.rockship.xyz/api/v1', position: 'bottom-right', theme: {
                 primaryColor: '#007bff',
                 backgroundColor: '#f8f9fa',
                 textColor: '#333'
-            }, welcomeMessage: 'Chào mừng bạn đến với CyHome Support!' }, config);
+            }, welcomeMessage: 'Chào mừng bạn đến với Rockship Support!' }, config);
     }
     // Initialize the chatbot
-    CyHomeChatbotSDK.prototype.init = function (containerId) {
+    RockshipChatbotSDK.prototype.init = function (containerId) {
         try {
             // Create container if not provided
             if (containerId) {
@@ -71,7 +71,7 @@ var CyHomeChatbotSDK = /** @class */ (function () {
             }
             else {
                 this.container = document.createElement('div');
-                this.container.id = 'cyhome-chatbot-container';
+                this.container.id = 'rockship-chatbot-container';
                 document.body.appendChild(this.container);
             }
             // Create React root and render
@@ -85,38 +85,38 @@ var CyHomeChatbotSDK = /** @class */ (function () {
             }
         }
         catch (error) {
-            console.error('CyHome Chatbot SDK initialization failed:', error);
+            console.error('Rockship Chatbot SDK initialization failed:', error);
         }
     };
     // Update configuration
-    CyHomeChatbotSDK.prototype.updateConfig = function (newConfig) {
+    RockshipChatbotSDK.prototype.updateConfig = function (newConfig) {
         this.config = __assign(__assign({}, this.config), newConfig);
         if (this.root && this.container) {
             this.root.render(react_1.default.createElement(Chatbot_1.Chatbot, { config: this.config }));
         }
     };
     // Destroy the chatbot
-    CyHomeChatbotSDK.prototype.destroy = function () {
+    RockshipChatbotSDK.prototype.destroy = function () {
         // In React 18, we use root.unmount() instead of ReactDOM.unmountComponentAtNode
         if (this.root) {
             this.root.unmount();
         }
-        if (this.container && this.container.id === 'cyhome-chatbot-container') {
+        if (this.container && this.container.id === 'rockship-chatbot-container') {
             document.body.removeChild(this.container);
         }
         this.container = null;
         this.root = null;
     };
     // Get current configuration
-    CyHomeChatbotSDK.prototype.getConfig = function () {
+    RockshipChatbotSDK.prototype.getConfig = function () {
         return __assign({}, this.config);
     };
-    return CyHomeChatbotSDK;
+    return RockshipChatbotSDK;
 }());
-exports.CyHomeChatbotSDK = CyHomeChatbotSDK;
+exports.RockshipChatbotSDK = RockshipChatbotSDK;
 // Default export
-exports.default = CyHomeChatbotSDK;
+exports.default = RockshipChatbotSDK;
 // Auto-attach to window if in browser environment
 if (typeof window !== 'undefined') {
-    window.CyHomeChatbotSDK = CyHomeChatbotSDK;
+    window.RockshipChatbotSDK = RockshipChatbotSDK;
 }

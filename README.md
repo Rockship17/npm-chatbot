@@ -1,6 +1,6 @@
-# CyHome Chatbot SDK
+# Rockship Chatbot SDK
 
-Một SDK JavaScript/TypeScript để tích hợp chatbot CyHome vào website của bạn một cách dễ dàng
+Một SDK JavaScript/TypeScript để tích hợp chatbot Rockship vào website của bạn một cách dễ dàng
 
 ## Tính năng
 
@@ -15,13 +15,19 @@ Một SDK JavaScript/TypeScript để tích hợp chatbot CyHome vào website c�
 ## Cài đặt
 
 ```bash
-npm install cyhome-chatbot-sdk
+npm install rockship-chatbot-sdk
 ```
 
 hoặc
 
 ```bash
-yarn add cyhome-chatbot-sdk
+yarn add rockship-chatbot-sdk
+```
+
+hoặc
+
+```bash
+pnpm install rockship-chatbot-sdk
 ```
 
 ## Sử dụng
@@ -34,20 +40,20 @@ yarn add cyhome-chatbot-sdk
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyHome Chatbot Demo</title>
+    <title>Rockship Chatbot Demo</title>
     <!-- Nhúng CSS của chatbot -->
-    <link rel="stylesheet" href="node_modules/cyhome-chatbot-sdk/dist/styles.css">
+    <link rel="stylesheet" href="node_modules/rockship-chatbot-sdk/dist/styles.css">
 </head>
 <body>
     <!-- Nội dung trang web của bạn -->
     
     <!-- Nhúng script của chatbot -->
-    <script src="node_modules/cyhome-chatbot-sdk/dist/index.js"></script>
+    <script src="node_modules/rockship-chatbot-sdk/dist/index.js"></script>
     <script>
         // Khởi tạo chatbot
-        const chatbot = new CyHomeChatbotSDK({
-            platformUserId: "123", // ID của người dùng (bắt buộc)
-            userName: "rockship",     // Tên hiển thị của người dùng
+        const chatbot = new RockshipChatbotSDK({
+            platformUserId: "YOUR_PLATFORM_USER_ID", // ID của người dùng (bắt buộc)
+            userName: "YOUR_USER_NAME",     // Tên hiển thị của người dùng
             apiBaseUrl: "https://cyhome.rockship.xyz/api/v1", // URL của API
             theme: {
                 primaryColor: "#007bff",     // Màu chủ đạo
@@ -67,16 +73,18 @@ yarn add cyhome-chatbot-sdk
 ### Sử dụng với React
 
 ```jsx
+"use client"
+
 import React, { useEffect } from 'react';
-import { CyHomeChatbotSDK } from 'cyhome-chatbot-sdk';
-import 'cyhome-chatbot-sdk/dist/styles.css';
+import { RockshipChatbotSDK } from 'rockship-chatbot-sdk';
+import 'rockship-chatbot-sdk/dist/styles.css';
 
 function App() {
   useEffect(() => {
     // Khởi tạo chatbot khi component mount
-    const chatbot = new CyHomeChatbotSDK({
-      platformUserId: "123",
-      userName: "rockship",
+    const chatbot = new RockshipChatbotSDK({
+      platformUserId: "YOUR_PLATFORM_USER_ID",
+      userName: "YOUR_USER_NAME",
       apiBaseUrl: "https://cyhome.rockship.xyz/api/v1",
       theme: {
         primaryColor: "#007bff",
@@ -108,9 +116,9 @@ export default App;
 ### Tùy chỉnh nâng cao
 
 ```javascript
-const chatbot = new CyHomeChatbotSDK({
-  platformUserId: "123",
-  userName: "rockship",
+const chatbot = new RockshipChatbotSDK({
+  platformUserId: "YOUR_PLATFORM_USER_ID",
+  userName: "YOUR_USER_NAME",
   apiBaseUrl: "https://cyhome.rockship.xyz/api/v1",
   theme: {
     primaryColor: "#007bff",
@@ -124,24 +132,20 @@ const chatbot = new CyHomeChatbotSDK({
   },
   welcomeMessage: "Xin chào! Tôi có thể giúp gì cho bạn?",
   placeholder: "Nhập tin nhắn của bạn...",
-  botName: "CyHome Chatbot",
+  botName: "Rockship Chatbot",
   botAvatar: "https://example.com/bot-avatar.png"
 });
-```
-
-```bash
-yarn add cyhome-chatbot-sdk
 ```
 
 ### Cách 1: Sử dụng SDK Class (Recommended)
 
 ```javascript
-import CyHomeChatbotSDK from 'cyhome-chatbot-sdk';
+import RockshipChatbotSDK from 'rockship-chatbot-sdk';
 
 // Khởi tạo chatbot
-const chatbot = new CyHomeChatbotSDK({
-  userName: 'rockship',
-  platformUserId: '123',
+const chatbot = new RockshipChatbotSDK({
+  userName: 'YOUR_USER_NAME',
+  platformUserId: 'YOUR_PLATFORM_USER_ID',
   apiBaseUrl: 'https://cyhome.rockship.xyz/api/v1', // optional
   position: 'bottom-right', // optional
   theme: {
@@ -149,7 +153,7 @@ const chatbot = new CyHomeChatbotSDK({
     backgroundColor: '#f8f9fa',
     textColor: '#333'
   },
-  welcomeMessage: 'Chào mừng bạn đến với CyHome Support!'
+  welcomeMessage: 'Chào mừng bạn đến với Rockship Support!'
 });
 
 // Khởi tạo chatbot
@@ -163,12 +167,12 @@ chatbot.init('my-chatbot-container');
 
 ```jsx
 import React from 'react';
-import { Chatbot } from 'cyhome-chatbot-sdk';
+import { Chatbot } from 'rockship-chatbot-sdk';
 
 function App() {
   const config = {
-    userName: 'rockship',
-    platformUserId: '123',
+    userName: 'YOUR_USER_NAME',
+    platformUserId: 'YOUR_PLATFORM_USER_ID',
     position: 'bottom-right',
     theme: {
       primaryColor: '#007bff',
@@ -194,7 +198,7 @@ function App() {
 <head>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/cyhome-chatbot-sdk/dist/index.js"></script>
+    <script src="https://unpkg.com/rockship-chatbot-sdk/dist/index.js"></script>
 </head>
 <body>
     <div id="root">
@@ -203,9 +207,9 @@ function App() {
 
     <script>
         // Khởi tạo chatbot
-        const chatbot = new window.CyHomeChatbotSDK({
-            userName: 'rockship',
-            platformUserId: '123',
+        const chatbot = new window.RockshipChatbotSDK({
+            userName: 'YOUR_USER_NAME',
+            platformUserId: 'YOUR_PLATFORM_USER_ID',
             position: 'bottom-right',
             theme: {
                 primaryColor: '#007bff',
@@ -242,9 +246,11 @@ interface ChatbotConfig {
 ## API Methods (SDK Class)
 
 ### `init(containerId?: string)`
+
 Khởi tạo chatbot. Nếu không truyền `containerId`, chatbot sẽ được thêm vào body.
 
 ### `updateConfig(newConfig: Partial<ChatbotConfig>)`
+
 Cập nhật cấu hình chatbot.
 
 ```javascript
@@ -256,6 +262,7 @@ chatbot.updateConfig({
 ```
 
 ### `destroy()`
+
 Hủy chatbot và cleanup resources.
 
 ```javascript
@@ -263,6 +270,7 @@ chatbot.destroy();
 ```
 
 ### `getConfig()`
+
 Lấy cấu hình hiện tại.
 
 ```javascript
@@ -274,7 +282,7 @@ const currentConfig = chatbot.getConfig();
 ### Tùy chỉnh theme dark mode
 
 ```javascript
-const darkThemeChatbot = new CyHomeChatbotSDK({
+const darkThemeChatbot = new RockshipChatbotSDK({
   userName: 'User',
   platformUserId: 'user123',
   theme: {
@@ -304,7 +312,7 @@ import CyHomeChatbotSDK from 'cyhome-chatbot-sdk';
 export default {
   name: 'App',
   mounted() {
-    this.chatbot = new CyHomeChatbotSDK({
+    this.chatbot = new RockshipChatbotSDK({
       userName: 'Vue User',
       platformUserId: 'vue-user-123'
     });
@@ -325,7 +333,7 @@ export default {
 SDK sử dụng các API endpoints sau:
 
 - `GET /api/v1/message/:platform_user_id` - Lấy danh sách tin nhắn
-- `POST /api/v1/cyhome/invoke` - Gửi tin nhắn mới
+- `POST /api/v1/cyhome/invoke` - Gửi tin nhắn mới (API endpoint giữ nguyên)
 - `GET /api/v1/conversation/:platform_user_id` - Lấy thông tin conversation
 - `DELETE /api/v1/conversation/:conversation_id` - Xóa conversation
 
@@ -336,7 +344,7 @@ SDK sử dụng các API endpoints sau:
 ```bash
 # Clone repository
 git clone <repository-url>
-cd cyhome-chatbot-sdk
+cd rockship-chatbot-sdk
 
 # Cài đặt dependencies
 npm install

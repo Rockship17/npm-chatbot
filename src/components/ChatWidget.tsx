@@ -159,7 +159,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
   }, [messages, isLoadingMore])
 
   if (!isOpen) return null
-  
+
   // Không hiển thị nội dung chat khi ở chế độ thu nhỏ
   if (isMinimized) return null
 
@@ -173,7 +173,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
 
   return (
     <div
-      className={`cyhome-chatbox ${isOpen ? 'open' : ''} fixed ${positionClasses[position]}`}
+      className={`rockship-chatbox ${isOpen ? "open" : ""} fixed ${positionClasses[position]}`}
       style={{
         backgroundColor: config.theme?.backgroundColor || "#ffffff",
       }}
@@ -186,39 +186,26 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         theme={config.theme}
       />
 
-      <div
-        ref={messagesContainerRef}
-        onScroll={handleScroll}
-        className="cyhome-messages-container"
-      >
+      <div ref={messagesContainerRef} onScroll={handleScroll} className="rockship-messages-container">
         {isLoadingMore && (
-          <div className="cyhome-loading">
-            <div className="cyhome-loading-dots">
-              <span className="cyhome-loading-dot"></span>
-              <span className="cyhome-loading-dot"></span>
-              <span className="cyhome-loading-dot"></span>
+          <div className="rockship-loading">
+            <div className="rockship-loading-dots">
+              <span className="rockship-loading-dot"></span>
+              <span className="rockship-loading-dot"></span>
+              <span className="rockship-loading-dot"></span>
             </div>
             <span>Đang tải tin nhắn cũ...</span>
           </div>
         )}
-        
-        {isLoading && (
-          <div className="cyhome-loading">
-            <div className="cyhome-loading-dots">
-              <span className="cyhome-loading-dot"></span>
-              <span className="cyhome-loading-dot"></span>
-              <span className="cyhome-loading-dot"></span>
-            </div>
-            <span>Đang nhập...</span>
-          </div>
-        )}
+
+        {/* Typing indicator moved to the bottom */}
 
         {messages.length === 0 && !isLoadingMore ? (
-          <div className="cyhome-welcome-message">
+          <div className="rockship-welcome-message">
             <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="currentColor" viewBox="0 0 24 24">
               <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
             </svg>
-            <p className="text-base">{config.welcomeMessage || "Chào mừng bạn đến với CyHome Support!"}</p>
+            <p className="text-base">{config.welcomeMessage || "Chào mừng bạn đến với Rockship Support!"}</p>
             <p className="text-sm mt-2 opacity-75">Hãy gửi tin nhắn để bắt đầu trò chuyện</p>
           </div>
         ) : (
@@ -227,6 +214,16 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
               <ChatMessage key={message.id} message={message} theme={config.theme} />
             ))}
           </>
+        )}
+        {isLoading && (
+          <div className="rockship-loading">
+            <span>Đang trả lời</span>
+            <div className="rockship-loading-dots">
+              <span className="rockship-loading-dot"></span>
+              <span className="rockship-loading-dot"></span>
+              <span className="rockship-loading-dot"></span>
+            </div>
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>

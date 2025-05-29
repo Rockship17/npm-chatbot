@@ -13,7 +13,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ config }) => {
 
   // Inject styles when component mounts
   useEffect(() => {
-    const styleId = "cyhome-chatbot-styles"
+    const styleId = "rockship-chatbot-styles"
     if (!document.getElementById(styleId)) {
       const style = document.createElement("style")
       style.id = styleId
@@ -86,7 +86,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ config }) => {
   }
 
   return (
-    <div className={`cyhome-chatbot-container ${isMinimized ? 'minimized' : ''}`}>
+    <div className={`rockship-chatbot-container ${isMinimized ? 'minimized' : ''}`}>
       <ChatButton 
         onClick={toggleChat} 
         isOpen={isOpen} 
