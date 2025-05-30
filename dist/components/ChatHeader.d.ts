@@ -9,6 +9,8 @@ interface ChatHeaderProps {
         backgroundColor?: string;
         textColor?: string;
     };
+    supportAgentName?: string;
+    headerLogo?: string;
 }
 export declare const ChatHeader: React.FC<ChatHeaderProps>;
 export {};

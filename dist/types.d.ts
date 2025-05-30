@@ -10,6 +10,19 @@ export interface ChatbotConfig {
     };
     position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
     welcomeMessage?: string;
+    supportAgentName?: string;
+    headerLogo?: string;
+    buttonConfig?: {
+        logo?: string;
+        size?: number;
+        text?: string;
+        shadow?: string;
+        position?: {
+            x?: number;
+            y?: number;
+        };
+    };
+    isResizable?: boolean;
 }
 export interface Message {
     id: string;

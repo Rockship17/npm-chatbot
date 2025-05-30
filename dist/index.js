@@ -57,7 +57,14 @@ var RockshipChatbotSDK = /** @class */ (function () {
                 primaryColor: '#007bff',
                 backgroundColor: '#f8f9fa',
                 textColor: '#333'
-            }, welcomeMessage: 'Chào mừng bạn đến với Rockship Support!' }, config);
+            }, welcomeMessage: 'Chào mừng bạn đến với Rockship Support!', supportAgentName: 'Rockship Support', headerLogo: undefined, isResizable: true, buttonConfig: {
+                size: 60, // Default size in pixels
+                shadow: '0 8px 25px rgba(102, 126, 234, 0.6)', // Default shadow
+                position: {
+                    x: undefined, // Will be calculated based on position
+                    y: undefined // Will be calculated based on position
+                }
+            } }, config);
     }
     // Initialize the chatbot
     RockshipChatbotSDK.prototype.init = function (containerId) {

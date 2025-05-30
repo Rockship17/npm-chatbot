@@ -10,6 +10,20 @@ export interface ChatbotConfig {
     };
     position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
     welcomeMessage?: string;
+    // New customization options
+    supportAgentName?: string; // Name of the support agent (default: Rockship Support)
+    headerLogo?: string; // URL to custom logo for the chat header
+    buttonConfig?: {
+        logo?: string; // URL to custom logo
+        size?: number; // Button size in pixels
+        text?: string; // Button text
+        shadow?: string; // Custom shadow
+        position?: {
+            x?: number;
+            y?: number;
+        };
+    };
+    isResizable?: boolean; // Whether the chat widget can be resized
 }
 
 export interface Message {
