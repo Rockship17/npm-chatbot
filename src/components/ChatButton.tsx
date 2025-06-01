@@ -182,7 +182,7 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
         >
           {config.buttonConfig?.logo ? (
             <div className="w-2/3 h-2/3 rounded-full overflow-hidden bg-white bg-opacity-20 flex items-center justify-center">
-              <img src={config.buttonConfig.logo} className="w-4/5 h-4/5 object-cover" />
+              <img src={config.buttonConfig.logo} className="w-4/5 h-4/5 object-cover rounded-full" style={{ objectFit: "cover" }} />
             </div>
           ) : (
             <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">

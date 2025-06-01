@@ -23,6 +23,7 @@ export interface ChatbotConfig {
         };
     };
     isResizable?: boolean;
+    defaultConversationAlias?: string;
 }
 export interface Message {
     id: string;
@@ -42,25 +43,39 @@ export interface MessageResponse {
         limit: number;
         total: number;
         cursor: string;
-        NextCursor: string;
+        next_cursor: string;
     };
 }
 export interface ChatResponse {
     data: {
         ai_reply: string;
         token_usage: number;
+        conversation_id: string;
+        conversation_alias: string;
     };
 }
 export interface Conversation {
     id: string;
     customer_id: string;
-    coze_conversation_id: string;
+    conversation_alias: string;
     platform_type: string;
+    title: string;
+    is_active: boolean;
     created_at: string;
     updated_at: string;
+    last_message?: string;
 }
-export interface ConversationResponse {
-    data: Conversation;
+export interface ConversationListResponse {
+    data: {
+        conversation: Conversation[];
+    };
+    paging: {
+        page: number;
+        limit: number;
+        total: number;
+        cursor: string;
+        next_cursor: string;
+    };
 }
 export interface ClearConversationResponse {
     data: string;

@@ -3,6 +3,7 @@ interface ChatHeaderProps {
     userName: string;
     onClose: () => void;
     onClear: () => void;
+    onShowHistory: () => void;
     isClearing: boolean;
     theme?: {
         primaryColor?: string;

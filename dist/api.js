@@ -54,12 +54,13 @@ var ChatbotAPI = /** @class */ (function () {
             }
         });
     }
-    ChatbotAPI.prototype.getMessages = function (platformUserId) {
-        return __awaiter(this, void 0, void 0, function () {
+    ChatbotAPI.prototype.listConversations = function (platformUserId_1) {
+        return __awaiter(this, arguments, void 0, function (platformUserId, page) {
             var response;
+            if (page === void 0) { page = 1; }
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.api.get("/rockship/list-message/".concat(platformUserId))];
+                    case 0: return [4 /*yield*/, this.api.get("/rockship/list-conversation/".concat(platformUserId), { params: { page: page } })];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];
@@ -67,29 +68,32 @@ var ChatbotAPI = /** @class */ (function () {
             });
         });
     };
-    ChatbotAPI.prototype.sendMessage = function (message, userName, platformUserId) {
-        return __awaiter(this, void 0, void 0, function () {
+    ChatbotAPI.prototype.getMessages = function (platformUserId_1, conversationId_1) {
+        return __awaiter(this, arguments, void 0, function (platformUserId, conversationId, page) {
             var response;
+            if (page === void 0) { page = 1; }
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.api.get("/rockship/list-message/".concat(platformUserId, "/").concat(conversationId), { params: { page: page } })];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/, response.data];
+                }
+            });
+        });
+    };
+    ChatbotAPI.prototype.sendMessage = function (message_1, userName_1, platformUserId_1) {
+        return __awaiter(this, arguments, void 0, function (message, userName, platformUserId, conversationAlias) {
+            var response;
+            if (conversationAlias === void 0) { conversationAlias = ""; }
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.api.post('/rockship/website', {
                             message: message,
                             user_name: userName,
-                            platform_user_id: platformUserId
+                            platform_user_id: platformUserId,
+                            conversation_alias: conversationAlias
                         })];
-                    case 1:
-                        response = _a.sent();
-                        return [2 /*return*/, response.data];
-                }
-            });
-        });
-    };
-    ChatbotAPI.prototype.getConversation = function (platformUserId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.api.get("/rockship/get-conversation/".concat(platformUserId))];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];

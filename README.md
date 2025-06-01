@@ -1,86 +1,91 @@
-# Rockship Chatbot SDK v1.3.6
+# Rockship Chatbot SDK v1.4.2
 
-Một SDK JavaScript/TypeScript để tích hợp chatbot Rockship vào website của bạn một cách dễ dàng với API mới nhất
+A JavaScript/TypeScript SDK for easily integrating the Rockship chatbot into your website with the latest API
 
-## Tính năng
+## Features
 
-- 🚀 Dễ dàng tích hợp với chỉ vài dòng code
-- 🎨 Tùy chỉnh hoàn toàn giao diện (logo, màu sắc, kích thước, vị trí)
-- 🔄 Hỗ trợ kéo thả nút chat đến bất kỳ vị trí nào trên màn hình
-- 📏 Có thể điều chỉnh kích thước hộp chat theo nhu cầu
-- 🔗 Liên kết mở trong tab mới
-- 🗑️ Chức năng xóa cuộc trò chuyện
-- ⚡ Được viết bằng TypeScript
+- 🚀 Easy integration with just a few lines of code
+- 🎨 Fully customizable interface (logo, colors, size, position)
+- 🔄 Drag and drop chat button to any position on the screen
+- 📏 Adjustable chat widget size
+- 🔗 Links open in new tabs
+- 💬 Chat history management with conversation selection
+- 🔄 Pagination support for loading older messages
+- 🗑️ Conversation deletion functionality
+- ⚡ Written in TypeScript
+- 🎭 Modern UI with animations and responsive design
+- ⚛️ Compatible with React 16.8 to 19.0
 
-## Cài đặt
+## Installation
 
 ```bash
 npm install rockship-chatbot-sdk
 ```
 
-hoặc
+or
 
 ```bash
 yarn add rockship-chatbot-sdk
 ```
 
-hoặc
+or
 
 ```bash
 pnpm install rockship-chatbot-sdk
 ```
 
-## Sử dụng
+## Usage
 
-### Tích hợp cơ bản
+### Basic Integration
 
 ```html
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rockship Chatbot Demo</title>
-    <!-- Nhúng CSS của chatbot -->
+    <!-- Include chatbot CSS -->
     <link rel="stylesheet" href="node_modules/rockship-chatbot-sdk/dist/styles.css">
 </head>
 <body>
-    <!-- Nội dung trang web của bạn -->
+    <!-- Your website content -->
     
-    <!-- Nhúng script của chatbot -->
+    <!-- Include chatbot script -->
     <script src="node_modules/rockship-chatbot-sdk/dist/index.js"></script>
     <script>
-        // Khởi tạo chatbot
+        // Initialize chatbot
         const chatbot = new RockshipChatbotSDK({
-            platformUserId: "YOUR_PLATFORM_USER_ID", // ID của người dùng (bắt buộc)
-            userName: "YOUR_USER_NAME",     // Tên hiển thị của người dùng
-            apiToken: "YOUR_API_TOKEN",     // Token xác thực (bắt buộc)
-            apiBaseUrl: "https://bot.rockship.xyz/api/v1", // URL của API
+            platformUserId: "YOUR_PLATFORM_USER_ID", // User ID (required)
+            userName: "YOUR_USER_NAME",     // Display name of the user
+            apiToken: "YOUR_API_TOKEN",     // Authentication token (required)
+            apiBaseUrl: "https://bot.rockship.xyz/api/v1", // API URL
             theme: {
-                primaryColor: "#007bff",     // Màu chủ đạo
-                textColor: "#212529",       // Màu chữ
-                backgroundColor: "#ffffff"   // Màu nền
+                primaryColor: "#007bff",     // Primary color
+                textColor: "#212529",       // Text color
+                backgroundColor: "#ffffff"   // Background color
             },
-            // Cấu hình mới
-            supportAgentName: "Hỗ trợ của Tôi", // Tên hiển thị của agent hỗ trợ
-            headerLogo: "https://example.com/logo.png", // Logo hiển thị trong header
-            isResizable: true,  // Cho phép thay đổi kích thước của hộp chat
+            // New configuration
+            supportAgentName: "My Support", // Display name of the support agent
+            headerLogo: "https://example.com/logo.png", // Logo displayed in header
+            isResizable: true,  // Allow resizing of the chat box
+            defaultConversationAlias: "", // Optional: Set a specific conversation to load initially
             buttonConfig: {
-                logo: "https://example.com/chat-icon.png", // Logo tùy chỉnh cho nút chat
-                size: 70, // Kích thước nút chat (px)
-                shadow: "0 8px 25px rgba(0, 123, 255, 0.6)", // Đổ bóng tùy chỉnh
-                position: { x: 20, y: 20 } // Vị trí cố định (từ góc trên bên trái)
+                logo: "https://example.com/chat-icon.png", // Custom logo for chat button
+                size: 70, // Chat button size (px)
+                shadow: "0 8px 25px rgba(0, 123, 255, 0.6)", // Custom shadow
+                position: { x: 1800, y: 800 }   // Fixed position (from top left corner)
             }
         });
         
-        // Hiển thị chatbot
+        // Display chatbot
         chatbot.init();
     </script>
 </body>
 </html>
 ```
 
-### Sử dụng với React
+### Using with React
 
 ```jsx
 "use client"
@@ -91,41 +96,44 @@ import 'rockship-chatbot-sdk/dist/styles.css';
 
 function App() {
   useEffect(() => {
-    // Khởi tạo chatbot khi component mount
+    // Initialize chatbot when component mounts
     const chatbot = new RockshipChatbotSDK({
-      // Thông tin cơ bản (bắt buộc)
+      // Basic information (required)
       platformUserId: "YOUR_PLATFORM_USER_ID",
       userName: "YOUR_USER_NAME",
       apiToken: "YOUR_API_TOKEN",
       apiBaseUrl: "https://bot.rockship.xyz/api/v1",
       
-      // Tùy chỉnh giao diện
+      // UI customization
       theme: {
         primaryColor: "#007bff",
         textColor: "#212529",
         backgroundColor: "#ffffff"
       },
       position: 'bottom-right', // 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
-      welcomeMessage: "Chào mừng bạn! Tôi có thể giúp gì được?",
+      welcomeMessage: "Welcome! How can I help you today?",
       
-      // Tùy chỉnh nâng cao (mới v1.2.0)
-      supportAgentName: "Hỗ trợ khách hàng",  // Thay vì "Rockship Support"
-      headerLogo: "https://example.com/logo.png",  // Logo trong header
-      isResizable: true,  // Cho phép kéo thả để thay đổi kích thước hộp chat
+      // Advanced customization (new in v1.2.0)
+      supportAgentName: "Customer Support",  // Instead of "Rockship Support"
+      headerLogo: "https://example.com/logo.png",  // Logo in header
+      isResizable: true,  // Allow drag and drop to resize chat box
       
-      // Cấu hình nút chat
+      // New conversation features (v1.3.6)
+      defaultConversationAlias: "", // Optional: Set a specific conversation to load initially
+      
+      // Chat button configuration
       buttonConfig: {
-        logo: "https://example.com/chat-icon.png",  // Logo tùy chỉnh
-        size: 70,                          // Kích thước nút (px)
-        shadow: "0 8px 25px rgba(0, 123, 255, 0.6)",  // Đổ bóng
-        position: { x: 20, y: 20 }         // Vị trí cố định (tùy chọn)
+        logo: "https://example.com/chat-icon.png",  // Custom logo
+        size: 70,                          // Button size (px)
+        shadow: "0 8px 25px rgba(0, 123, 255, 0.6)",  // Shadow
+        position: { x: 1800, y: 800 }           // Fixed position (optional)
       }
     });
     
-    // Hiển thị chatbot
+    // Display chatbot
     chatbot.init();
     
-    // Clean up khi component unmount
+    // Clean up when component unmounts
     return () => {
       chatbot.destroy();
     };
@@ -133,7 +141,7 @@ function App() {
 
   return (
     <div className="App">
-      {/* Nội dung ứng dụng của bạn */}
+      {/* Your application content */}
     </div>
   );
 }
@@ -141,50 +149,53 @@ function App() {
 export default App;
 ```
 
-### Cách 1: Sử dụng SDK Class (Recommended)
+### Method 1: Using SDK Class (Recommended)
 
 ```javascript
 import RockshipChatbotSDK from 'rockship-chatbot-sdk';
 
-// Khởi tạo chatbot
+// Initialize chatbot
 const chatbot = new RockshipChatbotSDK({
-  // Thông tin cơ bản (bắt buộc)
+  // Basic information (required)
   userName: 'YOUR_USER_NAME',
   platformUserId: 'YOUR_PLATFORM_USER_ID',
   apiToken: 'YOUR_API_TOKEN', // required for authentication
   apiBaseUrl: 'https://bot.rockship.xyz/api/v1', // optional
   
-  // Giao diện cơ bản
+  // Basic UI
   theme: {
     primaryColor: '#007bff',
     backgroundColor: '#f8f9fa',
     textColor: '#333'
   },
   position: 'bottom-right', // 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
-  welcomeMessage: 'Chào bạn, tôi có thể giúp gì cho bạn hôm nay?',
+  welcomeMessage: 'Hello, how can I help you today?',
   
-  // Tùy chỉnh nâng cao (mới v1.2.0)
-  supportAgentName: 'Hỗ trợ của Tôi',  // Tên hiển thị trong header
-  headerLogo: 'https://example.com/logo.png',  // Logo hiển thị trong header
-  isResizable: true,  // Cho phép thay đổi kích thước hộp chat
+  // Advanced customization (new in v1.2.0)
+  supportAgentName: 'My Support',  // Display name in header
+  headerLogo: 'https://example.com/logo.png',  // Logo displayed in header
+  isResizable: true,  // Allow resizing of chat box
   
-  // Cấu hình nút chat đầy đủ
+  // New conversation features (v1.3.6)
+  defaultConversationAlias: "", // Optional: Set a specific conversation to load initially
+  
+  // Full chat button configuration
   buttonConfig: {
-    logo: 'https://example.com/chat-icon.png',  // Logo tùy chỉnh
-    size: 70,  // Kích thước nút (px)
-    shadow: '0 8px 25px rgba(0, 123, 255, 0.6)',  // Đổ bóng
-    position: { x: 20, y: 20 }  // Vị trí cố định
+    logo: 'https://example.com/chat-icon.png',  // Custom logo
+    size: 70,  // Button size (px)
+    shadow: '0 8px 25px rgba(0, 123, 255, 0.6)',  // Shadow
+    position: { x: 1800, y: 800 }    // Fixed position
   }
 });
 
-// Khởi tạo chatbot
+// Initialize chatbot
 chatbot.init();
 
-// Hoặc khởi tạo trong một container cụ thể
+// Or initialize in a specific container
 chatbot.init('my-chatbot-container');
 ```
 
-### Cách 2: Sử dụng React Component trực tiếp
+### Method 2: Using React Component Directly
 
 ```jsx
 import React from 'react';
@@ -192,12 +203,12 @@ import { Chatbot } from 'rockship-chatbot-sdk';
 
 function App() {
   const config = {
-    // Cấu hình cơ bản
+    // Basic configuration
     userName: 'YOUR_USER_NAME',
     platformUserId: 'YOUR_PLATFORM_USER_ID',
     apiToken: 'YOUR_API_TOKEN',
     
-    // Giao diện và vị trí
+    // UI and position
     theme: {
       primaryColor: '#007bff',
       backgroundColor: '#f8f9fa',
@@ -285,40 +296,75 @@ function App() {
 ### ChatbotConfig
 
 ```typescript
+```
+
+## API Reference
+
+### ChatbotConfig Interface
+
+```typescript
 interface ChatbotConfig {
-  userName: string;                    // Tên người dùng (bắt buộc)
-  platformUserId: string;              // ID người dùng trên platform (bắt buộc)
-  apiBaseUrl?: string;                 // URL API base (mặc định: https://cyhome.rockship.xyz/api/v1)
-  theme?: {                            // Tùy chỉnh theme
-    primaryColor?: string;             // Màu chính (mặc định: #007bff)
-    backgroundColor?: string;          // Màu nền (mặc định: #f8f9fa)
-    textColor?: string;               // Màu chữ (mặc định: #333)
+  userName: string;                    // User name (required)
+  platformUserId: string;              // User ID on the platform (required)
+  apiToken: string;                    // Authentication token (required)
+  apiBaseUrl?: string;                 // API base URL (default: https://bot.rockship.xyz/api/v1)
+  defaultConversationAlias?: string;   // Initial conversation alias to load (optional)
+  theme?: {                            // Theme customization
+    primaryColor?: string;             // Primary color (default: #007bff)
+    backgroundColor?: string;          // Background color (default: #ffffff)
+    textColor?: string;                // Text color (default: #212529)
   };
-  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';  // Vị trí mặc định của chatbot
-  welcomeMessage?: string;             // Tin nhắn chào mừng
-  
-  // Tùy chỉnh mới
-  supportAgentName?: string;           // Tên của người hỗ trợ (mặc định: "Rockship Support")
-  headerLogo?: string;                 // URL hình ảnh logo hiển thị trong header
-  isResizable?: boolean;               // Cho phép thay đổi kích thước của hộp chat
-  buttonConfig?: {
-    logo?: string;                     // URL hình ảnh logo cho nút chat
-    size?: number;                     // Kích thước nút chat (pixel)
-    shadow?: string;                   // Đổ bóng tùy chỉnh
-    position?: {                       // Vị trí cố định
-      x?: number;                      // Vị trí theo trục X (pixel từ góc trái)
-      y?: number;                      // Vị trí theo trục Y (pixel từ góc trên)
-    };
+  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'; // Widget position
+  welcomeMessage?: string;             // Custom welcome message
+  supportAgentName?: string;           // Support agent name displayed in header
+  headerLogo?: string;                 // Custom logo URL for header
+  isResizable?: boolean;               // Allow chat widget resizing (default: true)
+  buttonConfig?: {                     // Chat button configuration
+    logo?: string;                     // Custom button logo URL
+    size?: number;                     // Button size in pixels (default: 60)
+    shadow?: string;                   // Custom CSS shadow
+    position?: { x: number; y: number }; // Fixed position on screen
   };
 }
 ```
+
+## New Features in v1.3.6
+
+### Chat History
+
+The chatbot now automatically loads the user's conversation history and allows switching between past conversations or starting new ones.
+
+### Conversation Management
+
+- Ability to browse past conversations
+- Conversation deletion support
+- Automatic loading of the most recent conversation on startup
+
+### Pagination
+
+The chatbot supports loading older messages when scrolling up in a conversation with automatic pagination.
+
+## Browser Compatibility
+
+The SDK is compatible with all modern browsers:
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## React Compatibility
+
+Compatible with React versions 16.8 to 19.0
+
+## Development
 
 ```bash
 # Clone repository
 git clone <repository-url>
 cd rockship-chatbot-sdk
 
-# Cài đặt dependencies
+# Install dependencies
 npm install
 
 # Build
@@ -328,69 +374,62 @@ npm run build
 npm run dev
 ```
 
-## Browser Support
-
-- Chrome 60+
-- Firefox 60+
-- Safari 12+
-- Edge 79+
-
 ## License
 
 MIT
 
-## Tính Năng Mới v1.2.4
+## Additional Features (v1.2.4)
 
-### 1. Nút Chat Nổi Bật
+### 1. Enhanced Chat Button
 
-- Hiệu ứng chuyển động pulsing làm nút Chat nổi bật hơn
-- Tùy chỉnh kích thước, màu sắc và đổ bóng
-- Giao diện tối giản chỉ hiển thị logo
+- Pulsing animation effect makes the Chat button more noticeable
+- Customizable size, color, and shadow
+- Minimalist interface showing only the logo
 
-### 2. Tùy Chỉnh Tên Agent
+### 2. Customizable Agent Name
 
-- Thay đổi được tên Agent hiển thị thay vì mặc định "Rockship Support"
-- Tên hiển thị trong header của hộp chat
+- Change the displayed agent name instead of the default "Rockship Support"
+- Name is displayed in the chat widget header
 
-### 3. Liên Kết Mở Trong Tab Mới
+### 3. Links Open in New Tabs
 
-- Tất cả liên kết trong trò chuyện đều mở trong tab mới
-- Không làm gián đoạn trải nghiệm của người dùng trên trang của bạn
+- All links in the chat open in new browser tabs
+- Does not interrupt the user experience on your page
 
-### 4. Hộp Chat Có Thể Điều Chỉnh Kích Thước
+### 4. Resizable Chat Widget
 
-- Kích thước có thể được điều chỉnh bằng cách kéo thả từ góc trái trên
-- Hữu ích khi cần xem ảnh hoặc tin nhắn dài
+- Size can be adjusted by dragging from the top-left corner
+- Useful when viewing images or long messages
 
-### 5. Kéo Thả Nút Chat
+### 5. Draggable Chat Button
 
-- Nút chat có thể được kéo đến bất kỳ vị trí nào trên màn hình
-- Vị trí có thể được cấu hình trước qua buttonConfig
+- Chat button can be dragged to any position on the screen
+- Position can be pre-configured through buttonConfig
 
-### 6. Tùy Chỉnh Toàn Diện
+### 6. Comprehensive Customization
 
-- Logo tùy chỉnh cho cả nút chat và header
-- Màu sắc, kích thước và vị trí đều có thể tùy chỉnh
+- Custom logos for both chat button and header
+- Colors, sizes, and positions are all customizable
 
-## Lịch Sử Cập Nhật
+## Update History
 
-### Phiên bản 1.2.4
+### Version 1.2.4
 
-- Loại bỏ text tooltip khi hover vào nút chat
-- Di chuyển nút resize lên góc trái trên của box chat
-- Cải thiện trải nghiệm kéo thả nút chat
-- Sửa các lỗi liên quan đến React Hooks
+- Removed text tooltip when hovering over the chat button
+- Moved resize handle to the top-left corner of the chat box
+- Improved drag-and-drop experience for the chat button
+- Fixed issues related to React Hooks
 
-### Phiên bản 1.2.0 - 1.2.3
+### Version 1.2.0 - 1.2.3
 
-- Thêm tính năng tùy chỉnh toàn diện cho chatbot
-- Hỗ trợ kéo thả nút chat theo mọi hướng
-- Thêm khả năng thay đổi kích thước hộp chat
-- Cải thiện hiển thị liên kết (mở trong tab mới)
-- Tùy chỉnh tên và logo agent hỗ trợ
+- Added comprehensive customization features for the chatbot
+- Added support for dragging the chat button in any direction
+- Added ability to resize the chat widget
+- Improved link display (opening in new tabs)
+- Added customization for agent name and logo
 
 ## Support
 
-Nếu bạn gặp vấn đề, vui lòng tạo issue trên GitHub repository.
+If you encounter any issues, please create an issue on the GitHub repository.
 
-Hoặc liên hệ trực tiếp tại [support@rockship.xyz](mailto:support@rockship.xyz)
+Or contact us directly at [support@rockship.xyz](mailto:support@rockship.xyz)

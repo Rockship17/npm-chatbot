@@ -1,10 +1,10 @@
-import { MessageResponse, ChatResponse, ConversationResponse, ClearConversationResponse } from './types';
+import { MessageResponse, ChatResponse, ConversationListResponse, ClearConversationResponse } from './types';
 export declare class ChatbotAPI {
     private api;
     private authToken;
     constructor(authToken: string, baseURL?: string);
-    getMessages(platformUserId: string): Promise<MessageResponse>;
-    sendMessage(message: string, userName: string, platformUserId: string): Promise<ChatResponse>;
-    getConversation(platformUserId: string): Promise<ConversationResponse>;
+    listConversations(platformUserId: string, page?: number): Promise<ConversationListResponse>;
+    getMessages(platformUserId: string, conversationId: string, page?: number): Promise<MessageResponse>;
+    sendMessage(message: string, userName: string, platformUserId: string, conversationAlias?: string): Promise<ChatResponse>;
     clearConversation(conversationId: string): Promise<ClearConversationResponse>;
 }

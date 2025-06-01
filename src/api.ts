@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import {
     MessageResponse,
     ChatResponse,
-    ConversationResponse,
+    ConversationListResponse,
     ClearConversationResponse
 } from './types';
 
@@ -22,26 +22,34 @@ export class ChatbotAPI {
         });
     }
 
-    async getMessages(platformUserId: string): Promise<MessageResponse> {
-        const response = await this.api.get<MessageResponse>(`/rockship/list-message/${platformUserId}`);
+    async listConversations(platformUserId: string, page: number = 1): Promise<ConversationListResponse> {
+        const response = await this.api.get<ConversationListResponse>(
+            `/rockship/list-conversation/${platformUserId}`,
+            { params: { page } }
+        );
+        return response.data;
+    }
+
+    async getMessages(platformUserId: string, conversationId: string, page: number = 1): Promise<MessageResponse> {
+        const response = await this.api.get<MessageResponse>(
+            `/rockship/list-message/${platformUserId}/${conversationId}`,
+            { params: { page } }
+        );
         return response.data;
     }
 
     async sendMessage(
         message: string,
         userName: string,
-        platformUserId: string
+        platformUserId: string,
+        conversationAlias: string = ""
     ): Promise<ChatResponse> {
         const response = await this.api.post<ChatResponse>('/rockship/website', {
             message,
             user_name: userName,
-            platform_user_id: platformUserId
+            platform_user_id: platformUserId,
+            conversation_alias: conversationAlias
         });
-        return response.data;
-    }
-
-    async getConversation(platformUserId: string): Promise<ConversationResponse> {
-        const response = await this.api.get<ConversationResponse>(`/rockship/get-conversation/${platformUserId}`);
         return response.data;
     }
 
