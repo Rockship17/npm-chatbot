@@ -195,9 +195,7 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
             backgroundColor: config.theme?.primaryColor || "#007bff",
             boxShadow: buttonShadow,
             width: buttonSize + "px",
-            height: buttonSize + "px",
-            // Add a pulsing effect to make the button more noticeable
-            animation: !isOpen && !isMinimized ? "pulse 2s infinite" : "none",
+            height: buttonSize + "px"
           }}
         >
           {config.buttonConfig?.logo ? (

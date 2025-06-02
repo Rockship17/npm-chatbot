@@ -157,9 +157,7 @@ var ChatButton = function (_a) {
                 backgroundColor: ((_e = config.theme) === null || _e === void 0 ? void 0 : _e.primaryColor) || "#007bff",
                 boxShadow: buttonShadow,
                 width: buttonSize + "px",
-                height: buttonSize + "px",
-                // Add a pulsing effect to make the button more noticeable
-                animation: !isOpen && !isMinimized ? "pulse 2s infinite" : "none",
+                height: buttonSize + "px"
             }, children: ((_f = config.buttonConfig) === null || _f === void 0 ? void 0 : _f.logo) ? ((0, jsx_runtime_1.jsx)("div", { className: "rounded-full overflow-hidden flex items-center justify-center w-full h-full", children: (0, jsx_runtime_1.jsx)("img", { src: config.buttonConfig.logo, style: { width: "100%", height: "100%" }, className: "object-cover rounded-full" }) })) : ((0, jsx_runtime_1.jsx)("svg", { className: "w-6 h-6 text-white", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" }) })) })) }));
 };
 exports.ChatButton = ChatButton;
