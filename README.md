@@ -1,4 +1,4 @@
-# Rockship Chatbot SDK v1.5.7
+# Rockship Chatbot SDK v1.5.9
 
 A JavaScript/TypeScript SDK for easily integrating the Rockship chatbot into your website with the latest API
 
@@ -71,7 +71,6 @@ pnpm install rockship-chatbot-sdk
                 width: "90vw",  // Width in fullscreen mode (default: 90vw)
                 height: "90vh"  // Height in fullscreen mode (default: 90vh)
             },
-            defaultConversationAlias: "", // Optional: Set a specific conversation to load initially
             buttonConfig: {
                 logo: "https://example.com/chat-icon.png", // Custom logo for chat button
                 size: 70, // Chat button size (px)
@@ -121,10 +120,7 @@ function App() {
       fullscreenConfig: {
         width: "90vw",  // Width in fullscreen mode (default: 90vw)
         height: "90vh"  // Height in fullscreen mode (default: 90vh)
-      }
-      
-      // New conversation features (v1.3.6)
-      defaultConversationAlias: "", // Optional: Set a specific conversation to load initially
+      },
       
       // Chat button configuration
       buttonConfig: {
@@ -182,10 +178,7 @@ const chatbot = new RockshipChatbotSDK({
   fullscreenConfig: {
     width: '90vw',  // Width in fullscreen mode (default: 90vw)
     height: '90vh'  // Height in fullscreen mode (default: 90vh)
-  }
-  
-  // New conversation features (v1.3.6)
-  defaultConversationAlias: "", // Optional: Set a specific conversation to load initially
+  },
   
   // Full chat button configuration
   buttonConfig: {
