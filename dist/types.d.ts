@@ -22,7 +22,10 @@ export interface ChatbotConfig {
             y?: number;
         };
     };
-    isResizable?: boolean;
+    fullscreenConfig?: {
+        width?: string;
+        height?: string;
+    };
     defaultConversationAlias?: string;
 }
 export interface Message {

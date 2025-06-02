@@ -23,7 +23,10 @@ export interface ChatbotConfig {
             y?: number;
         };
     };
-    isResizable?: boolean; // Whether the chat widget can be resized
+    fullscreenConfig?: {
+        width?: string; // Width of fullscreen mode (default: '90vw')
+        height?: string; // Height of fullscreen mode (default: '90vh')
+    };
     defaultConversationAlias?: string; // Optional default conversation alias
 }
 

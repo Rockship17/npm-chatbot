@@ -20,6 +20,8 @@ var ChatButton = function (_a) {
     var _k = (0, react_1.useState)({ x: 0, y: 0 }), initialPos = _k[0], setInitialPos = _k[1];
     var buttonRef = (0, react_1.useRef)(null);
     var dragStartTime = (0, react_1.useRef)(0); // Thêm ref để theo dõi thời điểm bắt đầu kéo
+    var dragTimer = (0, react_1.useRef)(null);
+    var mouseDownRef = (0, react_1.useRef)(false);
     var configPosition = config.position || "bottom-right";
     // Handle initial positioning and update when config changes
     (0, react_1.useEffect)(function () {
@@ -57,15 +59,40 @@ var ChatButton = function (_a) {
     var handleMouseDown = function (e) {
         if (isOpen)
             return; // Don't allow dragging when chat is open
-        setIsDragging(true);
+        mouseDownRef.current = true;
         setInitialPos({
             x: e.clientX,
             y: e.clientY,
         });
-        // Lưu thời điểm bắt đầu kéo
-        dragStartTime.current = Date.now();
+        // Start a timer: after 200ms, set dragging
+        dragTimer.current = window.setTimeout(function () {
+            if (mouseDownRef.current) {
+                setIsDragging(true);
+                dragStartTime.current = Date.now();
+            }
+        }, 200);
         // Prevent default to avoid text selection during drag
         e.preventDefault();
+    };
+    // On mouse up on the button (not document)
+    var handleButtonMouseUp = function (e) {
+        if (dragTimer.current !== null) {
+            clearTimeout(dragTimer.current);
+            dragTimer.current = null;
+        }
+        // If not dragging, treat as click
+        if (!isDragging && !justDragged) {
+            onClick();
+        }
+        mouseDownRef.current = false;
+    };
+    // On mouse leave (cancel drag intent)
+    var handleButtonMouseLeave = function () {
+        if (dragTimer.current !== null) {
+            clearTimeout(dragTimer.current);
+            dragTimer.current = null;
+        }
+        mouseDownRef.current = false;
     };
     // Handle dragging movement - now supports both X and Y directions
     var handleMouseMove = function (e) {
@@ -126,18 +153,13 @@ var ChatButton = function (_a) {
             left: position.x + "px",
             top: position.y + "px",
             transition: isDragging ? "none" : "all 0.3s ease",
-        }, children: !isOpen && ((0, jsx_runtime_1.jsx)("button", { ref: buttonRef, onClick: function (e) {
-                // Chỉ kích hoạt onClick nếu không đang kéo và không phải vừa kéo xong
-                if (!isDragging && !justDragged) {
-                    onClick();
-                }
-            }, onMouseDown: handleMouseDown, className: "rockship-floating-button group hoverable ".concat(isDragging ? "dragging" : ""), style: {
+        }, children: !isOpen && ((0, jsx_runtime_1.jsx)("button", { ref: buttonRef, onMouseDown: handleMouseDown, onMouseUp: handleButtonMouseUp, onMouseLeave: handleButtonMouseLeave, className: "rockship-floating-button group hoverable ".concat(isDragging ? "dragging" : ""), style: {
                 backgroundColor: ((_e = config.theme) === null || _e === void 0 ? void 0 : _e.primaryColor) || "#007bff",
                 boxShadow: buttonShadow,
                 width: buttonSize + "px",
                 height: buttonSize + "px",
                 // Add a pulsing effect to make the button more noticeable
                 animation: !isOpen && !isMinimized ? "pulse 2s infinite" : "none",
-            }, children: ((_f = config.buttonConfig) === null || _f === void 0 ? void 0 : _f.logo) ? ((0, jsx_runtime_1.jsx)("div", { className: "w-2/3 h-2/3 rounded-full overflow-hidden bg-white bg-opacity-20 flex items-center justify-center", children: (0, jsx_runtime_1.jsx)("img", { src: config.buttonConfig.logo, className: "w-4/5 h-4/5 object-cover rounded-full", style: { objectFit: "cover" } }) })) : ((0, jsx_runtime_1.jsx)("svg", { className: "w-6 h-6 text-white", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" }) })) })) }));
+            }, children: ((_f = config.buttonConfig) === null || _f === void 0 ? void 0 : _f.logo) ? ((0, jsx_runtime_1.jsx)("div", { className: "rounded-full overflow-hidden flex items-center justify-center w-full h-full", children: (0, jsx_runtime_1.jsx)("img", { src: config.buttonConfig.logo, style: { width: "100%", height: "100%" }, className: "object-cover rounded-full" }) })) : ((0, jsx_runtime_1.jsx)("svg", { className: "w-6 h-6 text-white", fill: "currentColor", viewBox: "0 0 24 24", children: (0, jsx_runtime_1.jsx)("path", { d: "M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" }) })) })) }));
 };
 exports.ChatButton = ChatButton;

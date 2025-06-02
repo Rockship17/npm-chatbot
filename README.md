@@ -1,4 +1,4 @@
-# Rockship Chatbot SDK v1.4.2
+# Rockship Chatbot SDK v1.5.7
 
 A JavaScript/TypeScript SDK for easily integrating the Rockship chatbot into your website with the latest API
 
@@ -6,12 +6,11 @@ A JavaScript/TypeScript SDK for easily integrating the Rockship chatbot into you
 
 - 🚀 Easy integration with just a few lines of code
 - 🎨 Fully customizable interface (logo, colors, size, position)
-- 🔄 Drag and drop chat button to any position on the screen
-- 📏 Adjustable chat widget size
-- 🔗 Links open in new tabs
+- 🔄 Drag and drop chat button to any position on the screen (with 0.2s hold delay)
+- 🖥️ Fullscreen mode toggle with customizable dimensions
+- 🔗 All markdown links open in new tabs
 - 💬 Chat history management with conversation selection
 - 🔄 Pagination support for loading older messages
-- 🗑️ Conversation deletion functionality
 - ⚡ Written in TypeScript
 - 🎭 Modern UI with animations and responsive design
 - ⚛️ Compatible with React 16.8 to 19.0
@@ -68,7 +67,10 @@ pnpm install rockship-chatbot-sdk
             // New configuration
             supportAgentName: "My Support", // Display name of the support agent
             headerLogo: "https://example.com/logo.png", // Logo displayed in header
-            isResizable: true,  // Allow resizing of the chat box
+            fullscreenConfig: {
+                width: "90vw",  // Width in fullscreen mode (default: 90vw)
+                height: "90vh"  // Height in fullscreen mode (default: 90vh)
+            },
             defaultConversationAlias: "", // Optional: Set a specific conversation to load initially
             buttonConfig: {
                 logo: "https://example.com/chat-icon.png", // Custom logo for chat button
@@ -113,10 +115,13 @@ function App() {
       position: 'bottom-right', // 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
       welcomeMessage: "Welcome! How can I help you today?",
       
-      // Advanced customization (new in v1.2.0)
+      // Advanced customization
       supportAgentName: "Customer Support",  // Instead of "Rockship Support"
       headerLogo: "https://example.com/logo.png",  // Logo in header
-      isResizable: true,  // Allow drag and drop to resize chat box
+      fullscreenConfig: {
+        width: "90vw",  // Width in fullscreen mode (default: 90vw)
+        height: "90vh"  // Height in fullscreen mode (default: 90vh)
+      }
       
       // New conversation features (v1.3.6)
       defaultConversationAlias: "", // Optional: Set a specific conversation to load initially
@@ -171,10 +176,13 @@ const chatbot = new RockshipChatbotSDK({
   position: 'bottom-right', // 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
   welcomeMessage: 'Hello, how can I help you today?',
   
-  // Advanced customization (new in v1.2.0)
+  // Advanced customization
   supportAgentName: 'My Support',  // Display name in header
   headerLogo: 'https://example.com/logo.png',  // Logo displayed in header
-  isResizable: true,  // Allow resizing of chat box
+  fullscreenConfig: {
+    width: '90vw',  // Width in fullscreen mode (default: 90vw)
+    height: '90vh'  // Height in fullscreen mode (default: 90vh)
+  }
   
   // New conversation features (v1.3.6)
   defaultConversationAlias: "", // Optional: Set a specific conversation to load initially

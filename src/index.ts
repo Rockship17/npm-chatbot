@@ -31,7 +31,6 @@ export class RockshipChatbotSDK {
             welcomeMessage: 'Chào mừng bạn đến với Rockship Support!',
             supportAgentName: 'Rockship Support',  // Default support agent name
             headerLogo: undefined,  // Can be customized by setting a URL
-            isResizable: true,  // Default to resizable chat box
             buttonConfig: {
                 size: 60,  // Default size in pixels
                 shadow: '0 8px 25px rgba(102, 126, 234, 0.6)',  // Default shadow

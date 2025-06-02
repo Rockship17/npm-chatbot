@@ -23,6 +23,8 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
   const [initialPos, setInitialPos] = useState({ x: 0, y: 0 })
   const buttonRef = useRef<HTMLButtonElement>(null)
   const dragStartTime = useRef<number>(0) // Thêm ref để theo dõi thời điểm bắt đầu kéo
+  const dragTimer = useRef<number | null>(null)
+  const mouseDownRef = useRef(false)
   const configPosition = config.position || "bottom-right"
 
   // Handle initial positioning and update when config changes
@@ -61,17 +63,39 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
   const handleMouseDown = (e: React.MouseEvent) => {
     if (isOpen) return // Don't allow dragging when chat is open
 
-    setIsDragging(true)
+    mouseDownRef.current = true
     setInitialPos({
       x: e.clientX,
       y: e.clientY,
     })
 
-    // Lưu thời điểm bắt đầu kéo
-    dragStartTime.current = Date.now()
+    // Start a timer: after 200ms, set dragging
+    dragTimer.current = window.setTimeout(() => {
+      if (mouseDownRef.current) {
+        setIsDragging(true)
+        dragStartTime.current = Date.now()
+      }
+    }, 200)
 
     // Prevent default to avoid text selection during drag
     e.preventDefault()
+  }
+
+  // On mouse up on the button (not document)
+  const handleButtonMouseUp = (e: React.MouseEvent) => {
+    if (dragTimer.current !== null) { clearTimeout(dragTimer.current); dragTimer.current = null; }
+
+    // If not dragging, treat as click
+    if (!isDragging && !justDragged) {
+      onClick()
+    }
+    mouseDownRef.current = false
+  }
+
+  // On mouse leave (cancel drag intent)
+  const handleButtonMouseLeave = () => {
+    if (dragTimer.current !== null) { clearTimeout(dragTimer.current); dragTimer.current = null; }
+    mouseDownRef.current = false
   }
 
   // Handle dragging movement - now supports both X and Y directions
@@ -105,25 +129,25 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
   const handleMouseUp = (e: MouseEvent) => {
     if (isDragging) {
       setIsDragging(false)
-      
-      const dragDuration = Date.now() - dragStartTime.current;
-      
+
+      const dragDuration = Date.now() - dragStartTime.current
+
       // Chỉ ngăn chặn sự kiện click khi kéo trong khoảng thời gian ngắn (100ms)
       // Đây là trường hợp người dùng có ý định click chứ không phải kéo
       if (dragDuration < 100) {
         e.stopPropagation()
         e.preventDefault()
-        return;
+        return
       }
-      
+
       // Đánh dấu rằng button vừa được kéo thả
       setJustDragged(true)
-      
+
       // Reset trạng thái justDragged sau 500ms để cho phép click lại
       setTimeout(() => {
         setJustDragged(false)
       }, 500)
-      
+
       // Không tự động mở box chat sau khi kéo thả nữa
       // Người dùng sẽ cần click vào button để mở box chat
     }
@@ -163,13 +187,9 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
       {!isOpen && (
         <button
           ref={buttonRef}
-          onClick={(e) => {
-            // Chỉ kích hoạt onClick nếu không đang kéo và không phải vừa kéo xong
-            if (!isDragging && !justDragged) {
-              onClick()
-            }
-          }}
           onMouseDown={handleMouseDown}
+          onMouseUp={handleButtonMouseUp}
+          onMouseLeave={handleButtonMouseLeave}
           className={`rockship-floating-button group hoverable ${isDragging ? "dragging" : ""}`}
           style={{
             backgroundColor: config.theme?.primaryColor || "#007bff",
@@ -181,8 +201,12 @@ export const ChatButton: React.FC<ChatButtonProps> = ({ onClick, isOpen, isMinim
           }}
         >
           {config.buttonConfig?.logo ? (
-            <div className="w-2/3 h-2/3 rounded-full overflow-hidden bg-white bg-opacity-20 flex items-center justify-center">
-              <img src={config.buttonConfig.logo} className="w-4/5 h-4/5 object-cover rounded-full" style={{ objectFit: "cover" }} />
+            <div className="rounded-full overflow-hidden flex items-center justify-center w-full h-full">
+              <img
+                src={config.buttonConfig.logo}
+                style={{ width: "100%", height: "100%" }}
+                className="object-cover rounded-full"
+              />
             </div>
           ) : (
             <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">

@@ -13,6 +13,8 @@ interface ChatHeaderProps {
   }
   supportAgentName?: string // Support agent name, defaults to "Rockship Support"
   headerLogo?: string // Custom logo URL for the header
+  isFullscreen: boolean
+  onToggleFullscreen: () => void
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -24,6 +26,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   theme,
   supportAgentName = "Rockship Support",
   headerLogo,
+  isFullscreen,
+  onToggleFullscreen,
 }) => {
   return (
     <div
@@ -32,8 +36,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     >
       <div className="flex items-center gap-3">
         {headerLogo ? (
-          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center" style={{ backgroundColor: "#FFFFFF", padding: "1px" }}>
-            <img src={headerLogo} alt={supportAgentName} className="w-full h-full object-cover rounded-full" style={{ objectFit: "cover" }} />
+          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+            <img src={headerLogo} alt={supportAgentName} style={{ width: "100%", height: "100%" }} className="object-cover rounded-full" />
           </div>
         ) : (
           <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
@@ -59,37 +63,19 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           </svg>
         </button>
         
+        {/* Fullscreen toggle button */}
         <button
-          onClick={onClear}
-          disabled={isClearing}
-          className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors disabled:opacity-50"
-          title="Xóa cuộc trò chuyện"
+          onClick={onToggleFullscreen}
+          className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+          title={isFullscreen ? "Thu nhỏ" : "Phóng to"}
         >
-          {isClearing ? (
-            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeDasharray="32"
-                strokeDashoffset="32"
-              >
-                <animate
-                  attributeName="stroke-dasharray"
-                  dur="2s"
-                  values="0 32;16 16;0 32;0 32"
-                  repeatCount="indefinite"
-                />
-                <animate attributeName="stroke-dashoffset" dur="2s" values="0;-16;-32;-32" repeatCount="indefinite" />
-              </circle>
+          {isFullscreen ? (
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" />
             </svg>
           ) : (
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+              <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
             </svg>
           )}
         </button>

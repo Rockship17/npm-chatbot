@@ -12,6 +12,8 @@ interface ChatHeaderProps {
     };
     supportAgentName?: string;
     headerLogo?: string;
+    isFullscreen: boolean;
+    onToggleFullscreen: () => void;
 }
 export declare const ChatHeader: React.FC<ChatHeaderProps>;
 export {};
