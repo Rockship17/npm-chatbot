@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc && npm run build:css",
-    "build:css": "postcss src/styles.css -o dist/styles.css",
+    "build:css": "tailwindcss -c tailwind.config.js -i ./src/styles.css -o ./dist/styles.css",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build"
   },
@@ -30,10 +30,10 @@
   "devDependencies": {
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "autoprefixer": "^10.4.0",
-    "postcss": "^8.4.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.4",
     "postcss-cli": "^10.0.0",
-    "tailwindcss": "^3.0.0",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {

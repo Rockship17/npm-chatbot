@@ -220,7 +220,6 @@ function App() {
     // Tùy chỉnh mới (v1.2.4)
     supportAgentName: 'Tiếp đón viên',
     headerLogo: 'https://example.com/logo.png',
-    isResizable: true,
     buttonConfig: {
       logo: 'https://example.com/icon.png',
       size: 65,
@@ -275,8 +274,7 @@ function App() {
             // Cấu hình nâng cao (mới v1.2.0)
             supportAgentName: 'Hỗ trợ trực tuyến',
             headerLogo: 'https://example.com/logo.png',
-            isResizable: true,
-            
+          
             // Tùy chỉnh nút chat
             buttonConfig: {
                 logo: 'https://example.com/chat-icon.png',
@@ -319,7 +317,6 @@ interface ChatbotConfig {
   welcomeMessage?: string;             // Custom welcome message
   supportAgentName?: string;           // Support agent name displayed in header
   headerLogo?: string;                 // Custom logo URL for header
-  isResizable?: boolean;               // Allow chat widget resizing (default: true)
   buttonConfig?: {                     // Chat button configuration
     logo?: string;                     // Custom button logo URL
     size?: number;                     // Button size in pixels (default: 60)
