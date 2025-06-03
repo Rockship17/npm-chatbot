@@ -17,8 +17,8 @@ interface ChatWidgetProps {
 
 export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimized, onClose, onMinimize }) => {
   // Get translations based on language setting
-  const language = config.language || 'en';
-  const translations = getTranslations(language as Language);
+  const language = config.language || "en"
+  const translations = getTranslations(language as Language)
   // State for chat
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -449,7 +449,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         {/* Typing indicator when loading */}
         {isLoading && messages.length > 0 && (
           <div className="rockship-loading rockship-typing">
-            <span>...</span>
+            <span>{translations.typingLabel}</span>
             <div className="rockship-loading-dots">
               <span className="rockship-loading-dot"></span>
               <span className="rockship-loading-dot"></span>
@@ -460,7 +460,12 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         <div ref={messagesEndRef} />
       </div>
 
-      <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} theme={config.theme} language={language as Language} />
+      <ChatInput
+        onSendMessage={handleSendMessage}
+        isLoading={isLoading}
+        theme={config.theme}
+        language={language as Language}
+      />
     </div>
   )
 }

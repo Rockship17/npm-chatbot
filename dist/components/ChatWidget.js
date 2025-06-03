@@ -82,7 +82,7 @@ var ChatWidget = function (_a) {
     var _b, _c, _d, _e, _f;
     var config = _a.config, isOpen = _a.isOpen, isMinimized = _a.isMinimized, onClose = _a.onClose, onMinimize = _a.onMinimize;
     // Get translations based on language setting
-    var language = config.language || 'en';
+    var language = config.language || "en";
     var translations = (0, translations_1.getTranslations)(language);
     // State for chat
     var _g = (0, react_1.useState)([]), messages = _g[0], setMessages = _g[1];
@@ -445,6 +445,6 @@ var ChatWidget = function (_a) {
                                             return (0, jsx_runtime_1.jsx)("a", __assign({ target: "_blank", rel: "noopener noreferrer" }, props));
                                         },
                                     }, children: message.content })) : (message.content) }) }, message.id));
-                    }), isLoading && messages.length > 0 && ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading rockship-typing", children: [(0, jsx_runtime_1.jsx)("span", { children: "..." }), (0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" })] })] })), (0, jsx_runtime_1.jsx)("div", { ref: messagesEndRef })] }), (0, jsx_runtime_1.jsx)(ChatInput_1.ChatInput, { onSendMessage: handleSendMessage, isLoading: isLoading, theme: config.theme, language: language })] }));
+                    }), isLoading && messages.length > 0 && ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading rockship-typing", children: [(0, jsx_runtime_1.jsx)("span", { children: translations.typingLabel }), (0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" })] })] })), (0, jsx_runtime_1.jsx)("div", { ref: messagesEndRef })] }), (0, jsx_runtime_1.jsx)(ChatInput_1.ChatInput, { onSendMessage: handleSendMessage, isLoading: isLoading, theme: config.theme, language: language })] }));
 };
 exports.ChatWidget = ChatWidget;

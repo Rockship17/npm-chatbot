@@ -8,6 +8,7 @@ export interface Translations {
     welcomeMessage: string;
     defaultGreeting: string;
     loadMore: string;
+    typingLabel: string;
     noMessages: string;
     clearConversation: string;
     backToChat: string;

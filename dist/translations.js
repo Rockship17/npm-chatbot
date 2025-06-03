@@ -14,9 +14,10 @@ var en = {
     welcomeMessage: "Welcome to Rockship Support!",
     defaultGreeting: "Hello! How can I help you?",
     loadMore: "Load more",
+    typingLabel: "Typing",
     noMessages: "No messages yet",
     clearConversation: "Clear conversation",
-    backToChat: "Back to chat",
+    backToChat: "New chat",
     conversationHistory: "Conversation history",
     noConversations: "No previous conversations",
 };
@@ -33,9 +34,10 @@ var vi = {
     welcomeMessage: "Chào mừng bạn đến với Rockship Support!",
     defaultGreeting: "Xin chào! Tôi có thể giúp gì cho bạn?",
     loadMore: "Tải thêm",
+    typingLabel: "Đang nhập",
     noMessages: "Chưa có tin nhắn",
     clearConversation: "Xóa cuộc trò chuyện",
-    backToChat: "Quay lại trò chuyện",
+    backToChat: "Cuộc trò chuyện mới",
     conversationHistory: "Lịch sử trò chuyện",
     noConversations: "Không có cuộc trò chuyện trước đó",
 };
