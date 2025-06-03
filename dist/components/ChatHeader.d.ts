@@ -1,4 +1,5 @@
 import React from "react";
+import { Language } from "../translations";
 interface ChatHeaderProps {
     userName: string;
     onClose: () => void;
@@ -14,6 +15,7 @@ interface ChatHeaderProps {
     headerLogo?: string;
     isFullscreen: boolean;
     onToggleFullscreen: () => void;
+    language?: Language;
 }
 export declare const ChatHeader: React.FC<ChatHeaderProps>;
 export {};

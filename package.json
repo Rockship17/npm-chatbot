@@ -1,6 +1,6 @@
 {
   "name": "rockship-chatbot-sdk",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Rockship Chatbot SDK for web integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

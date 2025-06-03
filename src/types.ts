@@ -13,6 +13,7 @@ export interface ChatbotConfig {
     // New customization options
     supportAgentName?: string; // Name of the support agent (default: Rockship Support)
     headerLogo?: string; // URL to custom logo for the chat header
+    language?: 'en' | 'vi'; // Language setting for the chatbot UI (default: 'en')
     buttonConfig?: {
         logo?: string; // URL to custom logo
         size?: number; // Button size in pixels

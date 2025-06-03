@@ -1,4 +1,5 @@
 import React from "react";
+import { Language } from "../translations";
 interface ChatInputProps {
     onSendMessage: (message: string) => void;
     isLoading: boolean;
@@ -7,6 +8,7 @@ interface ChatInputProps {
         backgroundColor?: string;
         textColor?: string;
     };
+    language?: Language;
 }
 export declare const ChatInput: React.FC<ChatInputProps>;
 export {};

@@ -1,4 +1,5 @@
 import React from "react"
+import { getTranslations, Language } from "../translations"
 
 interface ChatHeaderProps {
   userName: string
@@ -15,6 +16,7 @@ interface ChatHeaderProps {
   headerLogo?: string // Custom logo URL for the header
   isFullscreen: boolean
   onToggleFullscreen: () => void
+  language?: Language // Language setting
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -28,7 +30,10 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   headerLogo,
   isFullscreen,
   onToggleFullscreen,
+  language = 'en',
 }) => {
+  // Get translations based on language
+  const translations = getTranslations(language);
   return (
     <div
       className="flex items-center justify-between p-4 border-b text-white"
@@ -48,7 +53,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
         <div>
           <h3 className="font-semibold text-sm">{supportAgentName}</h3>
-          <p className="text-xs opacity-90">Xin chào {userName}</p>
+          <p className="text-xs opacity-90">{translations.hello} {userName}</p>
         </div>
       </div>
 
@@ -56,7 +61,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <button
           onClick={onShowHistory}
           className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
-          title="Lịch sử trò chuyện"
+          title={translations.chatHistory}
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
@@ -67,7 +72,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <button
           onClick={onToggleFullscreen}
           className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
-          title={isFullscreen ? "Thu nhỏ" : "Phóng to"}
+          title={isFullscreen ? translations.minimize : translations.maximize}
         >
           {isFullscreen ? (
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, KeyboardEvent } from "react"
+import { getTranslations, Language } from "../translations"
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void
@@ -8,9 +9,12 @@ interface ChatInputProps {
     backgroundColor?: string
     textColor?: string
   }
+  language?: Language // Language setting
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, theme }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, theme, language = 'en' }) => {
+  // Get translations based on language
+  const translations = getTranslations(language)
   const [message, setMessage] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   
@@ -48,7 +52,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, 
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Nhập tin nhắn của bạn..."
+          placeholder={translations.enterMessage}
           style={{
             borderColor: "#e9ecef",
             minHeight: "40px",

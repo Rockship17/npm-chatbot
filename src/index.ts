@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Chatbot } from './components/Chatbot';
 import { ChatbotConfig } from './types';
+import { getTranslations, Language } from './translations';
 
 // Named exports
 export { Chatbot } from './components/Chatbot';
@@ -20,6 +21,10 @@ export class RockshipChatbotSDK {
     private config: ChatbotConfig;
 
     constructor(config: ChatbotConfig) {
+        // Get translations based on language (defaulting to 'en' if not specified)
+        const language = config.language || 'en';
+        const translations = getTranslations(language as Language);
+        
         this.config = {
             apiBaseUrl: 'https://cyhome.rockship.xyz/api/v1',
             position: 'bottom-right',
@@ -28,7 +33,8 @@ export class RockshipChatbotSDK {
                 backgroundColor: '#f8f9fa',
                 textColor: '#333'
             },
-            welcomeMessage: 'Chào mừng bạn đến với Rockship Support!',
+            language: language, // Store the language setting
+            welcomeMessage: translations.welcomeMessage, // Use translated welcome message
             supportAgentName: 'Rockship Support',  // Default support agent name
             headerLogo: undefined,  // Can be customized by setting a URL
             buttonConfig: {

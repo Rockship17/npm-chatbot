@@ -3,10 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatInput = void 0;
 var jsx_runtime_1 = require("react/jsx-runtime");
 var react_1 = require("react");
+var translations_1 = require("../translations");
 var ChatInput = function (_a) {
     var _b;
-    var onSendMessage = _a.onSendMessage, isLoading = _a.isLoading, theme = _a.theme;
-    var _c = (0, react_1.useState)(""), message = _c[0], setMessage = _c[1];
+    var onSendMessage = _a.onSendMessage, isLoading = _a.isLoading, theme = _a.theme, _c = _a.language, language = _c === void 0 ? 'en' : _c;
+    // Get translations based on language
+    var translations = (0, translations_1.getTranslations)(language);
+    var _d = (0, react_1.useState)(""), message = _d[0], setMessage = _d[1];
     var textareaRef = (0, react_1.useRef)(null);
     // Auto-resize textarea based on content
     (0, react_1.useEffect)(function () {
@@ -31,7 +34,7 @@ var ChatInput = function (_a) {
             handleSend();
         }
     };
-    return ((0, jsx_runtime_1.jsx)("div", { className: "border-t bg-white p-4", children: (0, jsx_runtime_1.jsxs)("div", { className: "flex items-end gap-2", children: [(0, jsx_runtime_1.jsx)("textarea", { ref: textareaRef, value: message, onChange: function (e) { return setMessage(e.target.value); }, onKeyPress: handleKeyPress, placeholder: "Nh\u1EADp tin nh\u1EAFn c\u1EE7a b\u1EA1n...", style: {
+    return ((0, jsx_runtime_1.jsx)("div", { className: "border-t bg-white p-4", children: (0, jsx_runtime_1.jsxs)("div", { className: "flex items-end gap-2", children: [(0, jsx_runtime_1.jsx)("textarea", { ref: textareaRef, value: message, onChange: function (e) { return setMessage(e.target.value); }, onKeyPress: handleKeyPress, placeholder: translations.enterMessage, style: {
                         borderColor: "#e9ecef",
                         minHeight: "40px",
                         maxHeight: "120px",

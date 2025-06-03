@@ -32,6 +32,7 @@ exports.RockshipChatbotSDK = exports.ChatbotAPI = exports.ChatHeader = exports.C
 var react_1 = __importDefault(require("react"));
 var client_1 = __importDefault(require("react-dom/client"));
 var Chatbot_1 = require("./components/Chatbot");
+var translations_1 = require("./translations");
 // Named exports
 var Chatbot_2 = require("./components/Chatbot");
 Object.defineProperty(exports, "Chatbot", { enumerable: true, get: function () { return Chatbot_2.Chatbot; } });
@@ -53,11 +54,14 @@ var RockshipChatbotSDK = /** @class */ (function () {
     function RockshipChatbotSDK(config) {
         this.container = null;
         this.root = null;
+        // Get translations based on language (defaulting to 'en' if not specified)
+        var language = config.language || 'en';
+        var translations = (0, translations_1.getTranslations)(language);
         this.config = __assign({ apiBaseUrl: 'https://cyhome.rockship.xyz/api/v1', position: 'bottom-right', theme: {
                 primaryColor: '#007bff',
                 backgroundColor: '#f8f9fa',
                 textColor: '#333'
-            }, welcomeMessage: 'Chào mừng bạn đến với Rockship Support!', supportAgentName: 'Rockship Support', headerLogo: undefined, buttonConfig: {
+            }, language: language, welcomeMessage: translations.welcomeMessage, supportAgentName: 'Rockship Support', headerLogo: undefined, buttonConfig: {
                 size: 60, // Default size in pixels
                 shadow: '0 8px 25px rgba(102, 126, 234, 0.6)', // Default shadow
                 position: {

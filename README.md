@@ -1,13 +1,14 @@
-# Rockship Chatbot SDK v1.6.0
+# Rockship Chatbot SDK v1.6.3
 
 A JavaScript/TypeScript SDK for easily integrating the Rockship chatbot into your website with the latest API
 
 ## Features
 
-- 🚀 Easy integration with just a few lines of code
+- 🔊 Easy integration with just a few lines of code
 - 🎨 Fully customizable interface (logo, colors, size, position)
+- 🌍 Multilingual support (English and Vietnamese)
 - 🔄 Drag and drop chat button to any position on the screen (with 0.2s hold delay)
-- 🖥️ Fullscreen mode toggle with customizable dimensions
+- 💻️ Fullscreen mode toggle with customizable dimensions
 - 🔗 All markdown links open in new tabs
 - 💬 Chat history management with conversation selection
 - 🔄 Pagination support for loading older messages
@@ -71,6 +72,7 @@ pnpm install rockship-chatbot-sdk
                 width: "90vw",  // Width in fullscreen mode (default: 90vw)
                 height: "90vh"  // Height in fullscreen mode (default: 90vh)
             },
+            language: "en", // Language setting: 'en' for English, 'vi' for Vietnamese
             buttonConfig: {
                 logo: "https://example.com/chat-icon.png", // Custom logo for chat button
                 size: 70, // Chat button size (px)
@@ -105,6 +107,7 @@ function App() {
       apiToken: "YOUR_API_TOKEN",
       apiBaseUrl: "https://bot.rockship.xyz/api/v1",
       
+      language: "en", // Language setting: 'en' for English, 'vi' for Vietnamese
       // UI customization
       theme: {
         primaryColor: "#007bff",
@@ -163,6 +166,9 @@ const chatbot = new RockshipChatbotSDK({
   apiToken: 'YOUR_API_TOKEN', // required for authentication
   apiBaseUrl: 'https://bot.rockship.xyz/api/v1', // optional
   
+  // Language setting: 'en' for English, 'vi' for Vietnamese
+  language: "en",
+  
   // Basic UI
   theme: {
     primaryColor: '#007bff',
@@ -208,6 +214,9 @@ function App() {
     userName: 'YOUR_USER_NAME',
     platformUserId: 'YOUR_PLATFORM_USER_ID',
     apiToken: 'YOUR_API_TOKEN',
+    
+    // Language setting: 'en' for English, 'vi' for Vietnamese
+    language: "en",
     
     // UI and position
     theme: {
@@ -262,6 +271,9 @@ function App() {
             apiToken: 'YOUR_API_TOKEN',
             apiBaseUrl: 'https://bot.rockship.xyz/api/v1',
             
+            // Language setting: 'en' for English, 'vi' for Vietnamese
+            language: "en",
+            
             // Giao diện
             theme: {
                 primaryColor: '#007bff',
@@ -290,13 +302,6 @@ function App() {
 </html>
 ```
 
-## Cấu hình
-
-### ChatbotConfig
-
-```typescript
-```
-
 ## API Reference
 
 ### ChatbotConfig Interface
@@ -317,6 +322,7 @@ interface ChatbotConfig {
   welcomeMessage?: string;             // Custom welcome message
   supportAgentName?: string;           // Support agent name displayed in header
   headerLogo?: string;                 // Custom logo URL for header
+  language?: 'en' | 'vi';              // Language setting for UI text (default: 'en')
   buttonConfig?: {                     // Chat button configuration
     logo?: string;                     // Custom button logo URL
     size?: number;                     // Button size in pixels (default: 60)
@@ -325,22 +331,6 @@ interface ChatbotConfig {
   };
 }
 ```
-
-## New Features in v1.3.6
-
-### Chat History
-
-The chatbot now automatically loads the user's conversation history and allows switching between past conversations or starting new ones.
-
-### Conversation Management
-
-- Ability to browse past conversations
-- Conversation deletion support
-- Automatic loading of the most recent conversation on startup
-
-### Pagination
-
-The chatbot supports loading older messages when scrolling up in a conversation with automatic pagination.
 
 ## Browser Compatibility
 
@@ -375,59 +365,3 @@ npm run dev
 ## License
 
 MIT
-
-## Additional Features (v1.2.4)
-
-### 1. Enhanced Chat Button
-
-- Pulsing animation effect makes the Chat button more noticeable
-- Customizable size, color, and shadow
-- Minimalist interface showing only the logo
-
-### 2. Customizable Agent Name
-
-- Change the displayed agent name instead of the default "Rockship Support"
-- Name is displayed in the chat widget header
-
-### 3. Links Open in New Tabs
-
-- All links in the chat open in new browser tabs
-- Does not interrupt the user experience on your page
-
-### 4. Resizable Chat Widget
-
-- Size can be adjusted by dragging from the top-left corner
-- Useful when viewing images or long messages
-
-### 5. Draggable Chat Button
-
-- Chat button can be dragged to any position on the screen
-- Position can be pre-configured through buttonConfig
-
-### 6. Comprehensive Customization
-
-- Custom logos for both chat button and header
-- Colors, sizes, and positions are all customizable
-
-## Update History
-
-### Version 1.2.4
-
-- Removed text tooltip when hovering over the chat button
-- Moved resize handle to the top-left corner of the chat box
-- Improved drag-and-drop experience for the chat button
-- Fixed issues related to React Hooks
-
-### Version 1.2.0 - 1.2.3
-
-- Added comprehensive customization features for the chatbot
-- Added support for dragging the chat button in any direction
-- Added ability to resize the chat widget
-- Improved link display (opening in new tabs)
-- Added customization for agent name and logo
-
-## Support
-
-If you encounter any issues, please create an issue on the GitHub repository.
-
-Or contact us directly at [support@rockship.xyz](mailto:support@rockship.xyz)

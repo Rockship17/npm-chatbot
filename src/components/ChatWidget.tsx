@@ -5,6 +5,7 @@ import { ChatHeader } from "./ChatHeader"
 import { ChatMessage } from "./ChatMessage"
 import { ChatInput } from "./ChatInput"
 import ReactMarkdown from "react-markdown"
+import { getTranslations, Language } from "../translations"
 
 interface ChatWidgetProps {
   config: ChatbotConfig
@@ -15,6 +16,9 @@ interface ChatWidgetProps {
 }
 
 export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimized, onClose, onMinimize }) => {
+  // Get translations based on language setting
+  const language = config.language || 'en';
+  const translations = getTranslations(language as Language);
   // State for chat
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -191,7 +195,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
       const welcomeMessage: Message = {
         id: "welcome-" + Date.now().toString(),
         conversation_id: "",
-        content: config.welcomeMessage || "Xin chào! Tôi có thể giúp gì cho bạn?",
+        content: config.welcomeMessage || translations.defaultGreeting,
         type: "assistant",
         token_usage: 0,
         created_at: new Date().toISOString(),
@@ -252,7 +256,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
     const welcomeMessage: Message = {
       id: Date.now().toString(),
       conversation_id: "",
-      content: config.welcomeMessage || "Xin chào! Tôi có thể giúp gì cho bạn?",
+      content: config.welcomeMessage || translations.defaultGreeting,
       type: "assistant",
       token_usage: 0,
       created_at: new Date().toISOString(),
@@ -332,17 +336,18 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         onShowHistory={() => setShowHistory(!showHistory)}
         isFullscreen={isFullscreen}
         onToggleFullscreen={toggleFullscreen}
+        language={language as Language}
       />
 
       {/* Chat History Dropdown */}
       {showHistory && (
         <div className="mt-[72px] mx-4 bg-white z-20 flex flex-col rounded-lg shadow-lg overflow-hidden border w-full">
           <div className="p-3 border-b flex justify-between items-center bg-gray-50">
-            <h3 className="font-medium">Lịch sử trò chuyện</h3>
+            <h3 className="font-medium">{translations.conversationHistory}</h3>
             <button
               onClick={() => setShowHistory(false)}
               className="p-1 hover:bg-gray-200 rounded-full transition-colors"
-              title="Đóng"
+              title={translations.minimize}
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
@@ -366,7 +371,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
                     }`}
                   >
                     <p className="text-sm font-medium truncate">
-                      {conv.title || conv.last_message || "Cuộc trò chuyện mới"}
+                      {conv.title || conv.last_message || translations.backToChat}
                     </p>
                     <p className="text-xs text-gray-500 mt-1 truncate">
                       {new Date(conv.updated_at).toLocaleDateString()} {new Date(conv.updated_at).toLocaleTimeString()}
@@ -375,7 +380,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-500 py-4">Chưa có cuộc trò chuyện nào</p>
+              <p className="text-center text-gray-500 py-4">{translations.noConversations}</p>
             )}
           </div>
 
@@ -388,7 +393,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
               </svg>
-              New chat
+              {translations.backToChat}
             </button>
           </div>
         </div>
@@ -444,7 +449,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         {/* Typing indicator when loading */}
         {isLoading && messages.length > 0 && (
           <div className="rockship-loading rockship-typing">
-            <span>Đang trả lời</span>
+            <span>...</span>
             <div className="rockship-loading-dots">
               <span className="rockship-loading-dot"></span>
               <span className="rockship-loading-dot"></span>
@@ -455,7 +460,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         <div ref={messagesEndRef} />
       </div>
 
-      <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} theme={config.theme} />
+      <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} theme={config.theme} language={language as Language} />
     </div>
   )
 }

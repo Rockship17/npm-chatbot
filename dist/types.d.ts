@@ -12,6 +12,7 @@ export interface ChatbotConfig {
     welcomeMessage?: string;
     supportAgentName?: string;
     headerLogo?: string;
+    language?: 'en' | 'vi';
     buttonConfig?: {
         logo?: string;
         size?: number;
