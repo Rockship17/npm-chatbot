@@ -90,11 +90,20 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         const response = await api.current.getMessages(config.platformUserId, convId, page)
 
         if (response.data.message && response.data.message.length > 0) {
-          // Reverse messages to show oldest first if it's the first page
-          const sortedMessages =
-            page === 1 ? [...response.data.message].reverse() : [...messages, ...response.data.message.reverse()]
+          // The API returns messages in reverse chronological order (newest first)
+          // We need to sort them by created_at in ascending order (oldest first)
+          const sortMessages = (msgs: Message[]) => 
+            [...msgs].sort((a, b) => 
+              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+            )
+          
+          // For the first page, sort the messages
+          // For subsequent pages, combine all messages and sort them again
+          const newMessages = page === 1 
+            ? sortMessages(response.data.message)
+            : sortMessages([...messages, ...response.data.message])
 
-          setMessages(sortedMessages)
+          setMessages(newMessages)
           setConversationId(response.data.conversation_id)
 
           // Update pagination info
@@ -401,7 +410,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
 
       {/* Messages Container */}
       <div
-        className="flex-1 overflow-y-auto p-4 space-y-4 pb-20"
+        className="flex flex-col flex-1 overflow-y-auto p-4 space-y-4 pb-20"
         ref={messagesContainerRef}
         onScroll={handleMessagesScroll}
         style={{ height: "calc(100% - 60px)" }}
