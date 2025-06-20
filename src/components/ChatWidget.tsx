@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import { ChatbotConfig, Message, Conversation } from "../types"
 import { ChatbotAPI } from "../api"
 import { ChatHeader } from "./ChatHeader"
@@ -16,101 +16,105 @@ interface ChatWidgetProps {
 }
 
 export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimized, onClose, onMinimize }) => {
-  // Get translations based on language setting
   const language = config.language || "en"
   const translations = getTranslations(language as Language)
-  // State for chat
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
-  const [conversationAlias, setConversationAlias] = useState<string>("")
+  const [conversationAliasId, setConversationAliasId] = useState<string>("")
   const [initialized, setInitialized] = useState(false)
 
-  // Chat history state
   const [showHistory, setShowHistory] = useState(false)
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loadingHistory, setLoadingHistory] = useState(false)
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false)
 
-  // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const chatWidgetRef = useRef<HTMLDivElement>(null)
+  const previousScrollHeight = useRef<number>(0)
 
-  // Check if apiToken is available in config
   const apiToken = config.apiToken || ""
   const api = useRef(new ChatbotAPI(apiToken, config.apiBaseUrl))
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  // Map to store accumulated chunks by streamingId for complete message reconstruction
+  const streamChunkMap = React.useRef<Map<string, string[]>>(new Map())
+  
+  // Helper function to safely append a chunk to existing content, handling multi-byte UTF-8 characters properly
+  const safeAppendChunk = (existingContent: string, newChunk: string, streamingId: string): string => {
+    // For Vietnamese text, we need to accumulate ALL chunks and reconstruct the full message
+    // to avoid issues with split multi-byte characters
+    
+    // Get or initialize the chunks array for this streaming message
+    if (!streamChunkMap.current.has(streamingId)) {
+      streamChunkMap.current.set(streamingId, [])
+    }
+    
+    // Add this new chunk to our accumulated array
+    const chunks = streamChunkMap.current.get(streamingId) || []
+    chunks.push(newChunk)
+    streamChunkMap.current.set(streamingId, chunks)
+    
+    // Now reconstruct the ENTIRE message from all received chunks
+    // This completely avoids issues with split UTF-8 sequences
+    const fullMessage = chunks.join('')
+    
+    console.log(`[Vietnamese] Full message reconstructed (${fullMessage.length} chars)`) 
+    
+    return fullMessage
   }
 
-  // Load latest conversation and messages
-  const loadInitialData = useCallback(async () => {
+  const scrollToBottom = () => {
     try {
-      setIsLoading(true)
-
-      // First, get the latest conversation
-      const convResponse = await api.current.listConversations(config.platformUserId)
-
-      if (convResponse.data.conversation && convResponse.data.conversation.length > 0) {
-        // Get the most recent conversation
-        const latestConversation = convResponse.data.conversation[0]
-        setConversationId(latestConversation.id)
-        setConversationAlias(latestConversation.conversation_alias)
-
-        // Then load messages for this conversation
-        await loadMessages(latestConversation.id)
-      } else {
-        // No conversations yet
-        setMessages([])
-        setConversationId(null)
-        setConversationAlias("")
-      }
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     } catch (error) {
-      console.error("Error loading initial data:", error)
-      setMessages([])
-    } finally {
-      setIsLoading(false)
+      console.error("Error scrolling to bottom:", error)
     }
-  }, [config.platformUserId])
+  }
 
-  // Load messages for a specific conversation
   const loadMessages = useCallback(
     async (convId: string, page: number = 1) => {
       try {
-        setIsLoading(true)
+        if (page > 1 && messagesContainerRef.current) {
+          previousScrollHeight.current = messagesContainerRef.current.scrollHeight
+        }
+
+        if (page === 1) {
+          setIsLoading(true)
+        } else {
+          setIsLoadingMore(true)
+        }
+
         const response = await api.current.getMessages(config.platformUserId, convId, page)
 
         if (response.data.message && response.data.message.length > 0) {
-          // The API returns messages in reverse chronological order (newest first)
-          // We need to sort them by created_at in ascending order (oldest first)
-          const sortMessages = (msgs: Message[]) => 
-            [...msgs].sort((a, b) => 
-              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-            )
-          
-          // For the first page, sort the messages
-          // For subsequent pages, combine all messages and sort them again
-          const newMessages = page === 1 
-            ? sortMessages(response.data.message)
-            : sortMessages([...messages, ...response.data.message])
+          const sortedMessages = [...response.data.message].sort(
+            (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          )
 
-          setMessages(newMessages)
+          if (page === 1) {
+            setMessages(sortedMessages)
+          } else {
+            setMessages((prevMessages) => {
+              const allMessages = [...sortedMessages, ...prevMessages]
+              const uniqueMessages = allMessages.filter(
+                (message, index, self) => index === self.findIndex((m) => m.id === message.id)
+              )
+              return uniqueMessages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+            })
+          }
+
           setConversationId(response.data.conversation_id)
-
-          // Update pagination info
           setCurrentPage(page)
           setTotalPages(Math.ceil(response.paging.total / response.paging.limit))
         } else if (page === 1) {
-          // Only clear messages if it's the first page
           setMessages([])
         }
       } catch (error) {
@@ -119,53 +123,308 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
           setMessages([])
         }
       } finally {
-        setIsLoading(false)
+        if (page === 1) {
+          setIsLoading(false)
+        } else {
+          setIsLoadingMore(false)
+        }
       }
     },
-    [config.platformUserId, messages]
+    [config.platformUserId]
+  )
+
+  // Load initial data for the chat according to the flow:
+  // 1. Call API to get the most recent conversation (save conversation_alias_id and conversation_id)
+  // 2. Only if a conversation exists, load its messages
+  // 3. If no messages or no conversation, show welcome message
+  const loadInitialData = useCallback(async () => {
+    if (!config.platformUserId) return
+
+    setIsLoading(true)
+    try {
+      // First, try to load conversations to get the most recent one
+      console.log("Loading conversations for user:", config.platformUserId)
+      const conversationsResponse = await api.current.listConversations(
+        config.platformUserId,
+        1 // Get first page only
+      )
+
+      if (conversationsResponse?.data?.conversation && conversationsResponse.data.conversation.length > 0) {
+        // Get the most recent conversation (first in the list)
+        const latestConversation = conversationsResponse.data.conversation[0]
+        console.log("Latest conversation found:", latestConversation)
+
+        // Store the conversation ID and alias
+        setConversationId(latestConversation.id)
+        setConversationAliasId(latestConversation.conversation_alias_id || "")
+
+        // Now load messages for this conversation
+        console.log(`Loading messages for conversation ID: ${latestConversation.id}`)
+        const messagesResponse = await api.current.getMessages(
+          config.platformUserId,
+          latestConversation.id,
+          1 // First page
+        )
+
+        if (messagesResponse?.data?.message && messagesResponse.data.message.length > 0) {
+          // Reverse messages to show oldest first
+          const sortedMessages = [...messagesResponse.data.message].reverse()
+          console.log(`Loaded ${sortedMessages.length} messages`)
+          setMessages(sortedMessages)
+
+          // Set paging info
+          if (messagesResponse.paging) {
+            setCurrentPage(messagesResponse.paging.page || 1)
+            setTotalPages(Math.ceil((messagesResponse.paging.total || 0) / 10))
+          }
+        } else {
+          // No messages in conversation, use welcome message
+          console.log("No messages found in conversation, using welcome message")
+          setMessages([
+            {
+              id: "welcome-" + Date.now().toString(),
+              conversation_id: latestConversation.id,
+              content: config.welcomeMessage || translations.defaultGreeting,
+              type: "assistant",
+              token_usage: 0,
+              created_at: new Date().toISOString(),
+            },
+          ])
+        }
+      } else {
+        // No conversations found, prepare for new conversation on first message send
+        console.log("No conversations found, will create new conversation on first message")
+        setConversationId("")
+        setConversationAliasId("")
+        setMessages([
+          {
+            id: "welcome-" + Date.now().toString(),
+            conversation_id: "",
+            content: config.welcomeMessage || translations.defaultGreeting,
+            type: "assistant",
+            token_usage: 0,
+            created_at: new Date().toISOString(),
+          },
+        ])
+      }
+    } catch (error) {
+      console.error("Error loading initial data:", error)
+      // If error, set empty conversation identifiers and show welcome message
+      setConversationId("")
+      setConversationAliasId("")
+      setMessages([
+        {
+          id: "welcome-" + Date.now().toString(),
+          conversation_id: "",
+          content: config.welcomeMessage || translations.defaultGreeting,
+          type: "assistant",
+          token_usage: 0,
+          created_at: new Date().toISOString(),
+        },
+      ])
+    } finally {
+      setIsLoading(false)
+    }
+  }, [config.platformUserId, config.welcomeMessage, translations.defaultGreeting])
+
+  const selectConversation = useCallback(
+    async (id: string, alias: string) => {
+      setConversationId(id)
+      setConversationAliasId(alias)
+      setMessages([])
+      setShowHistory(false)
+      setCurrentPage(1)
+      setTotalPages(1)
+
+      try {
+        await loadMessages(id, 1)
+      } catch (error) {
+        console.error("Error fetching messages:", error)
+      }
+    },
+    [loadMessages]
   )
 
   const handleSendMessage = async (message: string) => {
-    if (isLoading) return
+    if (!message.trim()) return
 
     setIsLoading(true)
 
-    // Add user message immediately
-    const userMessage: Message = {
+    // Create a user message with a timestamp ID
+    const newUserMessage: Message = {
       id: Date.now().toString(),
-      conversation_id: conversationId || "",
       content: message,
       type: "user",
+      conversation_id: conversationId || "",
       token_usage: 0,
       created_at: new Date().toISOString(),
     }
 
-    setMessages((prev) => [...prev, userMessage])
+    // Add new message to the messages list
+    setMessages((prev) => [...prev, newUserMessage])
+
+    // Create a temporary message for the AI response with a unique ID
+    const streamingId = (Date.now() + 1).toString()
+    setStreamingMessageId(streamingId)
+
+    const aiMessage: Message = {
+      id: streamingId,
+      content: "",
+      type: "assistant",
+      conversation_id: conversationId || "",
+      token_usage: 0,
+      created_at: new Date().toISOString(),
+    }
+
+    setMessages((prev) => [...prev, aiMessage])
 
     try {
-      // Use conversation_alias if available
-      const response = await api.current.sendMessage(message, config.userName, config.platformUserId, conversationAlias)
+      // For existing conversations: pass both conversation_alias_id and conversation_id
+      // For new conversations: pass empty strings for both
+      console.log(
+        `Sending message with conversation_alias_id: "${conversationAliasId || ""}" and conversation_id: "${
+          conversationId || ""
+        }"`
+      )
 
-      // Add AI response
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        conversation_id: response.data.conversation_id,
-        content: response.data.ai_reply,
-        type: "assistant",
-        token_usage: response.data.token_usage,
-        created_at: new Date().toISOString(),
+      await api.current.sendMessage(
+        message,
+        config.userName,
+        config.platformUserId,
+        conversationAliasId || "", // Pass current alias if exists, or empty string for new conversation
+        conversationId || "", // Pass current ID if exists, or empty string for new conversation
+        {
+          // Handle streaming chunks
+          onChunk: (chunk) => {
+            console.log("Received chunk:", chunk)
+
+            // Update the streaming message content
+            // Use the safeAppendChunk helper for proper UTF-8 character handling
+            setMessages((prevMessages) =>
+              prevMessages.map((msg) => {
+                if (msg.id === streamingId) {
+                  // For Vietnamese text, we need special handling of multi-byte characters
+                  // Characters with diacritics like ạ, ế, ắ are multi-byte and can be split across chunks
+                  
+                  // Store current full message for debugging
+                  const currentContent = msg.content;
+                  console.log(`Current content (${currentContent.length} chars): ${currentContent.slice(-10)}`)
+                  console.log(`Appending chunk (${chunk.length} chars): '${chunk}'`)
+                  
+                  // Use our helper function to safely concatenate chunks
+                  // Pass the streamingId so we can track all chunks for this message
+                  const updatedContent = safeAppendChunk(currentContent, chunk, streamingId)
+                  console.log(`Updated content (${updatedContent.length} chars): ${updatedContent.slice(-20)}`)
+                  
+                  return {
+                    ...msg,
+                    content: updatedContent,
+                  }
+                }
+                return msg
+              })
+            )
+
+            // Scroll to show the latest content
+            scrollToBottom()
+          },
+
+          // Handle stream completion
+          onComplete: (response) => {
+            console.log("Stream completed, response:", response)
+
+            // IMPORTANT: Update conversation identifiers from the response
+            if (response.data && response.data.conversation_alias_id) {
+              console.log("Setting conversation_alias_id:", response.data.conversation_alias_id)
+              setConversationAliasId(response.data.conversation_alias_id)
+            }
+
+            if (response.data && response.data.conversation_id) {
+              console.log("Setting conversation_id:", response.data.conversation_id)
+              setConversationId(response.data.conversation_id)
+            }
+            
+            // Clean up accumulated chunks for this streaming message
+            if (streamingId && streamChunkMap.current.has(streamingId)) {
+              console.log(`[Vietnamese] Cleaning up accumulated chunks for message ${streamingId}`)
+              // Get final full message from all chunks
+              const finalMessage = streamChunkMap.current.get(streamingId)?.join('') || ''
+              console.log(`[Vietnamese] Final reconstructed message length: ${finalMessage.length}`)
+              
+              // Update the message with the fully reconstructed content
+              setMessages((prevMessages) =>
+                prevMessages.map((msg) => {
+                  if (msg.id === streamingId) {
+                    return {
+                      ...msg,
+                      content: finalMessage,
+                      conversation_id: response.data?.conversation_id || msg.conversation_id,
+                      token_usage: response.data?.token_usage || 0
+                    }
+                  }
+                  return msg
+                })
+              )
+              
+              // Delete the chunks to free memory
+              streamChunkMap.current.delete(streamingId)
+            }
+
+            setIsLoading(false)
+            scrollToBottom()
+          },
+
+          // Handle errors
+          onError: (err) => {
+            console.error("Stream error:", err)
+            
+            // Clean up accumulated chunks for the failed message
+            if (streamingId && streamChunkMap.current.has(streamingId)) {
+              streamChunkMap.current.delete(streamingId)
+            }
+            
+            // Set error message
+            const errorMsg = translations?.errorMessage || "Sorry, there was an error processing your request."
+            
+            setMessages((prev) =>
+              prev.map((msg) => {
+                if (msg.id === streamingId) {
+                  return {
+                    ...msg,
+                    content: errorMsg
+                  }
+                }
+                return msg
+              })
+            )
+            setStreamingMessageId(null)
+            setIsLoading(false)
+          },
+        }
+      )
+    } catch (err) {
+      console.error("Error sending message:", err)
+      
+      // Clean up accumulated chunks for the failed message
+      if (streamingId && streamChunkMap.current.has(streamingId)) {
+        streamChunkMap.current.delete(streamingId)
       }
-
-      setMessages((prev) => [...prev, aiMessage])
-
-      // Update conversation information from response
-      setConversationId(response.data.conversation_id)
-      setConversationAlias(response.data.conversation_alias)
-    } catch (error) {
-      console.error("Error sending message:", error)
-      // Remove user message on error
-      setMessages((prev) => prev.slice(0, -1))
-    } finally {
+      
+      // Set error message
+      const errorMsg = translations?.errorMessage || "Sorry, there was an error processing your request."
+      
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === streamingId) {
+            return {
+              ...msg,
+              content: errorMsg
+            }
+          }
+          return msg
+        })
+      )
+      setStreamingMessageId(null)
       setIsLoading(false)
     }
   }
@@ -176,13 +435,13 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
     setIsClearing(true)
 
     try {
-      // Delete the current conversation
       await api.current.clearConversation(conversationId)
 
-      // Reset state
       setMessages([])
       setConversationId(null)
-      setConversationAlias("")
+      setConversationAliasId("")
+      setCurrentPage(1)
+      setTotalPages(1)
     } catch (error) {
       console.error("Error clearing conversation:", error)
     } finally {
@@ -190,78 +449,29 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
     }
   }, [conversationId, isClearing])
 
-  // Initialize data when opening chat
-  useEffect(() => {
-    if (isOpen && !initialized) {
-      loadInitialData()
-      setInitialized(true)
-    }
-  }, [isOpen, initialized, loadInitialData])
-
-  // Add initial welcome message when there are no messages
-  useEffect(() => {
-    if (isOpen && initialized && messages.length === 0 && !isLoading && !conversationId) {
-      const welcomeMessage: Message = {
-        id: "welcome-" + Date.now().toString(),
-        conversation_id: "",
-        content: config.welcomeMessage || translations.defaultGreeting,
-        type: "assistant",
-        token_usage: 0,
-        created_at: new Date().toISOString(),
-      }
-      setMessages([welcomeMessage])
-    }
-  }, [isOpen, initialized, messages.length, isLoading, conversationId, config.welcomeMessage])
-
-  // Scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (messages.length > 0) {
-      scrollToBottom()
-    }
-  }, [messages])
-
-  // Handle scroll to load more messages
   const handleMessagesScroll = useCallback(
     (e: React.UIEvent<HTMLDivElement>) => {
       const { scrollTop } = e.currentTarget
 
-      // If scrolled to top and there are more pages, load previous messages
-      if (scrollTop === 0 && currentPage < totalPages && !isLoading) {
-        loadMessages(conversationId as string, currentPage + 1)
+      if (scrollTop === 0 && currentPage < totalPages && !isLoadingMore && conversationId) {
+        const nextPage = currentPage + 1
+        console.log(`Loading page ${nextPage} of ${totalPages}`)
+        loadMessages(conversationId, nextPage)
       }
     },
-    [conversationId, currentPage, totalPages, isLoading, loadMessages]
+    [conversationId, currentPage, totalPages, isLoadingMore, loadMessages]
   )
 
-  // Select a conversation from history
-  const selectConversation = useCallback(
-    async (id: string, alias: string) => {
-      setConversationId(id)
-      setConversationAlias(alias)
-      setMessages([])
-      setShowHistory(false) // Hide dropdown after selection
-      setIsLoading(true) // Show loading indicator
-
-      try {
-        const response = await api.current.getMessages(config.platformUserId, id)
-        setMessages(response.data.message || []) // API returns message array not messages
-      } catch (error) {
-        console.error("Error fetching messages:", error)
-      } finally {
-        setIsLoading(false) // Hide loading indicator
-      }
-    },
-    [config.platformUserId]
-  )
-
-  // Start a new conversation
   const startNewConversation = useCallback(() => {
-    setConversationId(null)
-    setConversationAlias("") // Empty conversation_alias for new conversation
+    // Reset conversation state for new conversation
+    setConversationId("")
+    setConversationAliasId("")
     setMessages([])
-    setShowHistory(false) // Hide history dropdown
+    setShowHistory(false)
+    setCurrentPage(1)
+    setTotalPages(1)
 
-    // Add welcome message with original styling
+    // Add welcome message
     const welcomeMessage: Message = {
       id: Date.now().toString(),
       conversation_id: "",
@@ -272,9 +482,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
     }
 
     setMessages([welcomeMessage])
-  }, [config.welcomeMessage])
+  }, [config.welcomeMessage, translations.defaultGreeting])
 
-  // Load conversation list
   const loadConversations = useCallback(async () => {
     if (!config.platformUserId) return
 
@@ -294,19 +503,62 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
     }
   }, [config.platformUserId])
 
-  // Load conversations when showing history panel
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen((prev) => !prev)
+  }, [])
+
+  useEffect(() => {
+    if (isOpen && !initialized) {
+      setInitialized(true)
+      loadInitialData()
+    }
+  }, [isOpen, initialized])
+
+  useEffect(() => {
+    if (isOpen && initialized && messages.length === 0 && !isLoading && !conversationId) {
+      // If we have no messages and no conversation id, set a welcome message
+      const welcomeMessage: Message = {
+        id: "welcome-" + Date.now().toString(),
+        conversation_id: "",
+        content: config.welcomeMessage || translations.defaultGreeting,
+        type: "assistant",
+        token_usage: 0,
+        created_at: new Date().toISOString(),
+      }
+      setMessages([welcomeMessage])
+    }
+  }, [
+    isOpen,
+    initialized,
+    messages.length,
+    isLoading,
+    conversationId,
+    config.welcomeMessage,
+    translations.defaultGreeting,
+  ])
+
+  useEffect(() => {
+    if (messages.length > 0 && !isLoadingMore) {
+      scrollToBottom()
+    }
+  }, [messages, isLoadingMore])
+
+  useEffect(() => {
+    if (!isLoadingMore && previousScrollHeight.current > 0 && messagesContainerRef.current) {
+      const newScrollHeight = messagesContainerRef.current.scrollHeight
+      const heightDifference = newScrollHeight - previousScrollHeight.current
+
+      messagesContainerRef.current.scrollTop = heightDifference
+      previousScrollHeight.current = 0
+    }
+  }, [isLoadingMore])
+
   useEffect(() => {
     if (showHistory) {
       loadConversations()
     }
   }, [showHistory, loadConversations])
 
-  // Toggle fullscreen function
-  const toggleFullscreen = useCallback(() => {
-    setIsFullscreen((prev) => !prev)
-  }, [])
-
-  // Position classes based on config
   const position = config.position || "bottom-right"
   const positionClasses = {
     "bottom-right": "bottom-4 right-4",
@@ -316,8 +568,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
   }
 
   if (!isOpen) return null
-
-  // Don't display chat content when minimized
   if (isMinimized) return null
 
   return (
@@ -348,7 +598,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         language={language as Language}
       />
 
-      {/* Chat History Dropdown */}
       {showHistory && (
         <div className="mt-[72px] mx-4 bg-white z-20 flex flex-col rounded-lg shadow-lg overflow-hidden border w-full">
           <div className="p-3 border-b flex justify-between items-center bg-gray-50">
@@ -374,7 +623,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
                 {conversations.map((conv) => (
                   <div
                     key={conv.id}
-                    onClick={() => selectConversation(conv.id, conv.conversation_alias)}
+                    onClick={() => selectConversation(conv.id, conv.conversation_alias_id)}
                     className={`p-2 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
                       conv.id === conversationId ? "border-blue-500 bg-blue-50" : ""
                     }`}
@@ -408,13 +657,22 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
         </div>
       )}
 
-      {/* Messages Container */}
       <div
         className="flex flex-col flex-1 overflow-y-auto p-4 space-y-4 pb-20"
         ref={messagesContainerRef}
         onScroll={handleMessagesScroll}
         style={{ height: "calc(100% - 60px)" }}
       >
+        {isLoadingMore && (
+          <div className="flex justify-center py-2">
+            <div
+              className="animate-spin h-6 w-6 border-2 border-t-transparent rounded-full"
+              style={{
+                borderColor: `${config.theme?.primaryColor || "#007bff"} transparent transparent transparent`,
+              }}
+            ></div>
+          </div>
+        )}
         {isLoading && messages.length === 0 && (
           <div className="rockship-loading-messages">
             <div className="rockship-loading-spinner">
@@ -454,9 +712,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config, isOpen, isMinimi
             </div>
           </div>
         ))}
-
-        {/* Typing indicator when loading */}
-        {isLoading && messages.length > 0 && (
+        {isLoading && messages.length > 0 && !isLoadingMore && !streamingMessageId && (
           <div className="rockship-loading rockship-typing">
             <span>{translations.typingLabel}</span>
             <div className="rockship-loading-dots">

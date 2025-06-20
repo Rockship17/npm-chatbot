@@ -27,7 +27,7 @@ export interface ChatbotConfig {
         width?: string;
         height?: string;
     };
-    defaultConversationAlias?: string;
+    defaultConversationAliasId?: string;
 }
 export interface Message {
     id: string;
@@ -55,13 +55,13 @@ export interface ChatResponse {
         ai_reply: string;
         token_usage: number;
         conversation_id: string;
-        conversation_alias: string;
+        conversation_alias_id: string;
     };
 }
 export interface Conversation {
     id: string;
     customer_id: string;
-    conversation_alias: string;
+    conversation_alias_id: string;
     platform_type: string;
     title: string;
     is_active: boolean;
@@ -83,4 +83,9 @@ export interface ConversationListResponse {
 }
 export interface ClearConversationResponse {
     data: string;
+}
+export interface StreamingCallbacks {
+    onChunk?: (chunk: string) => void;
+    onComplete?: (response: ChatResponse) => void;
+    onError?: (error: Event) => void;
 }

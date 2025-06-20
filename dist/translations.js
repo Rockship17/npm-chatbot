@@ -20,6 +20,8 @@ var en = {
     backToChat: "New chat",
     conversationHistory: "Conversation history",
     noConversations: "No previous conversations",
+    // Error handling
+    errorMessage: "Sorry, there was an error processing your request.",
 };
 // Vietnamese translations
 var vi = {
@@ -40,6 +42,8 @@ var vi = {
     backToChat: "Cuộc trò chuyện mới",
     conversationHistory: "Lịch sử trò chuyện",
     noConversations: "Không có cuộc trò chuyện trước đó",
+    // Error handling
+    errorMessage: "Xin lỗi, đã xảy ra lỗi khi xử lý yêu cầu của bạn.",
 };
 // Map of all translations
 var translations = {

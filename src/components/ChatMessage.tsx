@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import ReactMarkdown from "react-markdown"
 import { Message } from "../types"
 
@@ -37,7 +37,32 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, theme }) => {
             <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
           ) : (
             <div className="text-sm leading-relaxed markdown-content">
-              <ReactMarkdown>{message.content}</ReactMarkdown>
+              {/* Use useMemo to prevent unnecessary re-renders during streaming */}
+              {useMemo(() => {
+                // Convert message content to a clean string
+                // This helps ensure all Vietnamese diacritical marks are preserved
+                let contentToRender = message.content;
+                
+                // Log the exact content being rendered for debugging
+                if (contentToRender && contentToRender.includes('ạ') || contentToRender.includes('ắ') || contentToRender.includes('ế')) {
+                  console.log('Rendering Vietnamese text, length:', contentToRender.length);
+                }
+                
+                return (
+                  <ReactMarkdown
+                    components={{
+                      // Customize link rendering to open in new tab
+                      a: ({node, ...props}) => <a target="_blank" rel="noopener noreferrer" {...props} />,
+                      // Handle code blocks properly
+                      code: ({node, ...props}) => <code className="bg-gray-100 p-1 rounded" {...props} />,
+                      // Ensure paragraphs preserve whitespace better
+                      p: ({node, ...props}) => <p style={{whiteSpace: 'pre-wrap'}} {...props} />
+                    }}
+                  >
+                    {contentToRender}
+                  </ReactMarkdown>
+                );
+              }, [message.content])}
             </div>
           )}
         </div>

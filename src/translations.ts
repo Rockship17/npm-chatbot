@@ -22,6 +22,9 @@ export interface Translations {
   backToChat: string;
   conversationHistory: string;
   noConversations: string;
+  
+  // Error handling
+  errorMessage: string;
 }
 
 // English translations
@@ -45,6 +48,9 @@ const en: Translations = {
   backToChat: "New chat",
   conversationHistory: "Conversation history",
   noConversations: "No previous conversations",
+  
+  // Error handling
+  errorMessage: "Sorry, there was an error processing your request.",
 };
 
 // Vietnamese translations
@@ -68,6 +74,9 @@ const vi: Translations = {
   backToChat: "Cuộc trò chuyện mới",
   conversationHistory: "Lịch sử trò chuyện",
   noConversations: "Không có cuộc trò chuyện trước đó",
+  
+  // Error handling
+  errorMessage: "Xin lỗi, đã xảy ra lỗi khi xử lý yêu cầu của bạn.",
 };
 
 // Map of all translations

@@ -28,7 +28,7 @@ export interface ChatbotConfig {
         width?: string; // Width of fullscreen mode (default: '90vw')
         height?: string; // Height of fullscreen mode (default: '90vh')
     };
-    defaultConversationAlias?: string; // Optional default conversation alias
+    defaultConversationAliasId?: string; // Optional default conversation alias id
 }
 
 export interface Message {
@@ -59,14 +59,14 @@ export interface ChatResponse {
         ai_reply: string;
         token_usage: number;
         conversation_id: string;
-        conversation_alias: string;
+        conversation_alias_id: string;
     };
 }
 
 export interface Conversation {
     id: string;
     customer_id: string;
-    conversation_alias: string;
+    conversation_alias_id: string;
     platform_type: string;
     title: string;
     is_active: boolean;
@@ -90,4 +90,10 @@ export interface ConversationListResponse {
 
 export interface ClearConversationResponse {
     data: string;
+}
+
+export interface StreamingCallbacks {
+    onChunk?: (chunk: string) => void;
+    onComplete?: (response: ChatResponse) => void;
+    onError?: (error: Event) => void;
 }

@@ -14,5 +14,6 @@ export interface Translations {
     backToChat: string;
     conversationHistory: string;
     noConversations: string;
+    errorMessage: string;
 }
 export declare const getTranslations: (language?: Language) => Translations;
