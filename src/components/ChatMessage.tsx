@@ -43,6 +43,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, theme }) => {
                 // This helps ensure all Vietnamese diacritical marks are preserved
                 let contentToRender = message.content;
                 
+                // We're now handling URL fixing with custom renderers
+                // No pre-processing needed
+                
                 // Log the exact content being rendered for debugging
                 if (contentToRender && contentToRender.includes('ạ') || contentToRender.includes('ắ') || contentToRender.includes('ế')) {
                   console.log('Rendering Vietnamese text, length:', contentToRender.length);
@@ -56,7 +59,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, theme }) => {
                       // Handle code blocks properly
                       code: ({node, ...props}) => <code className="bg-gray-100 p-1 rounded" {...props} />,
                       // Ensure paragraphs preserve whitespace better
-                      p: ({node, ...props}) => <p style={{whiteSpace: 'pre-wrap'}} {...props} />
+                      p: ({node, ...props}) => <p style={{whiteSpace: 'pre-wrap'}} {...props} />,
+                      // Custom image renderer that preserves URL signatures
+                      img: ({node, ...props}) => {
+                        // Use the src directly without any modification to preserve signatures
+                        return <img {...props} alt={props.alt || ""} />
+                      }
                     }}
                   >
                     {contentToRender}

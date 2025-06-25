@@ -46,6 +46,8 @@ var ChatMessage = function (_a) {
                             // Convert message content to a clean string
                             // This helps ensure all Vietnamese diacritical marks are preserved
                             var contentToRender = message.content;
+                            // We're now handling URL fixing with custom renderers
+                            // No pre-processing needed
                             // Log the exact content being rendered for debugging
                             if (contentToRender && contentToRender.includes('ạ') || contentToRender.includes('ắ') || contentToRender.includes('ế')) {
                                 console.log('Rendering Vietnamese text, length:', contentToRender.length);
@@ -65,6 +67,12 @@ var ChatMessage = function (_a) {
                                     p: function (_a) {
                                         var node = _a.node, props = __rest(_a, ["node"]);
                                         return (0, jsx_runtime_1.jsx)("p", __assign({ style: { whiteSpace: 'pre-wrap' } }, props));
+                                    },
+                                    // Custom image renderer that preserves URL signatures
+                                    img: function (_a) {
+                                        var node = _a.node, props = __rest(_a, ["node"]);
+                                        // Use the src directly without any modification to preserve signatures
+                                        return (0, jsx_runtime_1.jsx)("img", __assign({}, props, { alt: props.alt || "" }));
                                     }
                                 }, children: contentToRender }));
                         }, [message.content]) })) }), (0, jsx_runtime_1.jsx)("div", { className: "text-xs text-gray-500 mt-1 ".concat(isUser ? "text-right" : "text-left"), children: formatTime(message.created_at) })] }) }));

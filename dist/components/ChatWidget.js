@@ -10,39 +10,6 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -105,7 +72,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatWidget = void 0;
 var jsx_runtime_1 = require("react/jsx-runtime");
-var react_1 = __importStar(require("react"));
+var react_1 = require("react");
 var api_1 = require("../api");
 var ChatHeader_1 = require("./ChatHeader");
 var ChatInput_1 = require("./ChatInput");
@@ -136,26 +103,6 @@ var ChatWidget = function (_a) {
     var previousScrollHeight = (0, react_1.useRef)(0);
     var apiToken = config.apiToken || "";
     var api = (0, react_1.useRef)(new api_1.ChatbotAPI(apiToken, config.apiBaseUrl));
-    // Map to store accumulated chunks by streamingId for complete message reconstruction
-    var streamChunkMap = react_1.default.useRef(new Map());
-    // Helper function to safely append a chunk to existing content, handling multi-byte UTF-8 characters properly
-    var safeAppendChunk = function (existingContent, newChunk, streamingId) {
-        // For Vietnamese text, we need to accumulate ALL chunks and reconstruct the full message
-        // to avoid issues with split multi-byte characters
-        // Get or initialize the chunks array for this streaming message
-        if (!streamChunkMap.current.has(streamingId)) {
-            streamChunkMap.current.set(streamingId, []);
-        }
-        // Add this new chunk to our accumulated array
-        var chunks = streamChunkMap.current.get(streamingId) || [];
-        chunks.push(newChunk);
-        streamChunkMap.current.set(streamingId, chunks);
-        // Now reconstruct the ENTIRE message from all received chunks
-        // This completely avoids issues with split UTF-8 sequences
-        var fullMessage = chunks.join('');
-        console.log("[Vietnamese] Full message reconstructed (".concat(fullMessage.length, " chars)"));
-        return fullMessage;
-    };
     var scrollToBottom = function () {
         var _a;
         try {
@@ -229,10 +176,6 @@ var ChatWidget = function (_a) {
             });
         });
     }, [config.platformUserId]);
-    // Load initial data for the chat according to the flow:
-    // 1. Call API to get the most recent conversation (save conversation_alias_id and conversation_id)
-    // 2. Only if a conversation exists, load its messages
-    // 3. If no messages or no conversation, show welcome message
     var loadInitialData = (0, react_1.useCallback)(function () { return __awaiter(void 0, void 0, void 0, function () {
         var conversationsResponse, latestConversation, messagesResponse, sortedMessages, error_2;
         var _a, _b;
@@ -245,36 +188,29 @@ var ChatWidget = function (_a) {
                     _c.label = 1;
                 case 1:
                     _c.trys.push([1, 6, 7, 8]);
-                    // First, try to load conversations to get the most recent one
                     console.log("Loading conversations for user:", config.platformUserId);
-                    return [4 /*yield*/, api.current.listConversations(config.platformUserId, 1 // Get first page only
-                        )];
+                    return [4 /*yield*/, api.current.listConversations(config.platformUserId, 1)];
                 case 2:
                     conversationsResponse = _c.sent();
                     if (!(((_a = conversationsResponse === null || conversationsResponse === void 0 ? void 0 : conversationsResponse.data) === null || _a === void 0 ? void 0 : _a.conversation) && conversationsResponse.data.conversation.length > 0)) return [3 /*break*/, 4];
                     latestConversation = conversationsResponse.data.conversation[0];
                     console.log("Latest conversation found:", latestConversation);
-                    // Store the conversation ID and alias
                     setConversationId(latestConversation.id);
                     setConversationAliasId(latestConversation.conversation_alias_id || "");
-                    // Now load messages for this conversation
                     console.log("Loading messages for conversation ID: ".concat(latestConversation.id));
-                    return [4 /*yield*/, api.current.getMessages(config.platformUserId, latestConversation.id, 1 // First page
-                        )];
+                    return [4 /*yield*/, api.current.getMessages(config.platformUserId, latestConversation.id, 1)];
                 case 3:
                     messagesResponse = _c.sent();
                     if (((_b = messagesResponse === null || messagesResponse === void 0 ? void 0 : messagesResponse.data) === null || _b === void 0 ? void 0 : _b.message) && messagesResponse.data.message.length > 0) {
                         sortedMessages = __spreadArray([], messagesResponse.data.message, true).reverse();
                         console.log("Loaded ".concat(sortedMessages.length, " messages"));
                         setMessages(sortedMessages);
-                        // Set paging info
                         if (messagesResponse.paging) {
                             setCurrentPage(messagesResponse.paging.page || 1);
                             setTotalPages(Math.ceil((messagesResponse.paging.total || 0) / 10));
                         }
                     }
                     else {
-                        // No messages in conversation, use welcome message
                         console.log("No messages found in conversation, using welcome message");
                         setMessages([
                             {
@@ -289,7 +225,6 @@ var ChatWidget = function (_a) {
                     }
                     return [3 /*break*/, 5];
                 case 4:
-                    // No conversations found, prepare for new conversation on first message send
                     console.log("No conversations found, will create new conversation on first message");
                     setConversationId("");
                     setConversationAliasId("");
@@ -308,7 +243,6 @@ var ChatWidget = function (_a) {
                 case 6:
                     error_2 = _c.sent();
                     console.error("Error loading initial data:", error_2);
-                    // If error, set empty conversation identifiers and show welcome message
                     setConversationId("");
                     setConversationAliasId("");
                     setMessages([
@@ -356,9 +290,10 @@ var ChatWidget = function (_a) {
         });
     }); }, [loadMessages]);
     var handleSendMessage = function (message) { return __awaiter(void 0, void 0, void 0, function () {
-        var newUserMessage, streamingId, aiMessage, err_1, errorMsg_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var newUserMessage, responseId, aiMessage, response_1, err_1, errorMsg_1;
+        var _a, _b, _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0:
                     if (!message.trim())
                         return [2 /*return*/];
@@ -371,12 +306,11 @@ var ChatWidget = function (_a) {
                         token_usage: 0,
                         created_at: new Date().toISOString(),
                     };
-                    // Add new message to the messages list
                     setMessages(function (prev) { return __spreadArray(__spreadArray([], prev, true), [newUserMessage], false); });
-                    streamingId = (Date.now() + 1).toString();
-                    setStreamingMessageId(streamingId);
+                    responseId = (Date.now() + 1).toString();
+                    setStreamingMessageId(responseId);
                     aiMessage = {
-                        id: streamingId,
+                        id: responseId,
                         content: "",
                         type: "assistant",
                         conversation_id: conversationId || "",
@@ -384,111 +318,50 @@ var ChatWidget = function (_a) {
                         created_at: new Date().toISOString(),
                     };
                     setMessages(function (prev) { return __spreadArray(__spreadArray([], prev, true), [aiMessage], false); });
-                    _a.label = 1;
+                    _d.label = 1;
                 case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    // For existing conversations: pass both conversation_alias_id and conversation_id
-                    // For new conversations: pass empty strings for both
+                    _d.trys.push([1, 3, , 4]);
                     console.log("Sending message with conversation_alias_id: \"".concat(conversationAliasId || "", "\" and conversation_id: \"").concat(conversationId || "", "\""));
-                    return [4 /*yield*/, api.current.sendMessage(message, config.userName, config.platformUserId, conversationAliasId || "", // Pass current alias if exists, or empty string for new conversation
-                        conversationId || "", // Pass current ID if exists, or empty string for new conversation
-                        {
-                            // Handle streaming chunks
-                            onChunk: function (chunk) {
-                                console.log("Received chunk:", chunk);
-                                // Update the streaming message content
-                                // Use the safeAppendChunk helper for proper UTF-8 character handling
-                                setMessages(function (prevMessages) {
-                                    return prevMessages.map(function (msg) {
-                                        if (msg.id === streamingId) {
-                                            // For Vietnamese text, we need special handling of multi-byte characters
-                                            // Characters with diacritics like ạ, ế, ắ are multi-byte and can be split across chunks
-                                            // Store current full message for debugging
-                                            var currentContent = msg.content;
-                                            console.log("Current content (".concat(currentContent.length, " chars): ").concat(currentContent.slice(-10)));
-                                            console.log("Appending chunk (".concat(chunk.length, " chars): '").concat(chunk, "'"));
-                                            // Use our helper function to safely concatenate chunks
-                                            // Pass the streamingId so we can track all chunks for this message
-                                            var updatedContent = safeAppendChunk(currentContent, chunk, streamingId);
-                                            console.log("Updated content (".concat(updatedContent.length, " chars): ").concat(updatedContent.slice(-20)));
-                                            return __assign(__assign({}, msg), { content: updatedContent });
-                                        }
-                                        return msg;
-                                    });
-                                });
-                                // Scroll to show the latest content
-                                scrollToBottom();
-                            },
-                            // Handle stream completion
+                    return [4 /*yield*/, api.current.sendMessage(message, config.userName, config.platformUserId, conversationAliasId || "", conversationId || "", {
                             onComplete: function (response) {
-                                var _a;
-                                console.log("Stream completed, response:", response);
-                                // IMPORTANT: Update conversation identifiers from the response
-                                if (response.data && response.data.conversation_alias_id) {
-                                    console.log("Setting conversation_alias_id:", response.data.conversation_alias_id);
-                                    setConversationAliasId(response.data.conversation_alias_id);
-                                }
-                                if (response.data && response.data.conversation_id) {
-                                    console.log("Setting conversation_id:", response.data.conversation_id);
-                                    setConversationId(response.data.conversation_id);
-                                }
-                                // Clean up accumulated chunks for this streaming message
-                                if (streamingId && streamChunkMap.current.has(streamingId)) {
-                                    console.log("[Vietnamese] Cleaning up accumulated chunks for message ".concat(streamingId));
-                                    // Get final full message from all chunks
-                                    var finalMessage_1 = ((_a = streamChunkMap.current.get(streamingId)) === null || _a === void 0 ? void 0 : _a.join('')) || '';
-                                    console.log("[Vietnamese] Final reconstructed message length: ".concat(finalMessage_1.length));
-                                    // Update the message with the fully reconstructed content
-                                    setMessages(function (prevMessages) {
-                                        return prevMessages.map(function (msg) {
-                                            var _a, _b;
-                                            if (msg.id === streamingId) {
-                                                return __assign(__assign({}, msg), { content: finalMessage_1, conversation_id: ((_a = response.data) === null || _a === void 0 ? void 0 : _a.conversation_id) || msg.conversation_id, token_usage: ((_b = response.data) === null || _b === void 0 ? void 0 : _b.token_usage) || 0 });
-                                            }
-                                            return msg;
-                                        });
-                                    });
-                                    // Delete the chunks to free memory
-                                    streamChunkMap.current.delete(streamingId);
-                                }
-                                setIsLoading(false);
-                                scrollToBottom();
+                                console.log("Response received:", response);
                             },
-                            // Handle errors
                             onError: function (err) {
-                                console.error("Stream error:", err);
-                                // Clean up accumulated chunks for the failed message
-                                if (streamingId && streamChunkMap.current.has(streamingId)) {
-                                    streamChunkMap.current.delete(streamingId);
-                                }
-                                // Set error message
-                                var errorMsg = (translations === null || translations === void 0 ? void 0 : translations.errorMessage) || "Sorry, there was an error processing your request.";
-                                setMessages(function (prev) {
-                                    return prev.map(function (msg) {
-                                        if (msg.id === streamingId) {
-                                            return __assign(__assign({}, msg), { content: errorMsg });
-                                        }
-                                        return msg;
-                                    });
-                                });
-                                setStreamingMessageId(null);
-                                setIsLoading(false);
+                                console.error("API error:", err);
                             },
                         })];
                 case 2:
-                    _a.sent();
+                    response_1 = _d.sent();
+                    if ((_a = response_1.data) === null || _a === void 0 ? void 0 : _a.conversation_alias_id) {
+                        console.log("Setting conversation_alias_id:", response_1.data.conversation_alias_id);
+                        setConversationAliasId(response_1.data.conversation_alias_id);
+                    }
+                    if ((_b = response_1.data) === null || _b === void 0 ? void 0 : _b.conversation_id) {
+                        console.log("Setting conversation_id:", response_1.data.conversation_id);
+                        setConversationId(response_1.data.conversation_id);
+                    }
+                    if ((_c = response_1.data) === null || _c === void 0 ? void 0 : _c.ai_reply) {
+                        console.log("Setting message from response: ".concat(response_1.data.ai_reply.length, " chars"));
+                        setMessages(function (prevMessages) {
+                            return prevMessages.map(function (msg) {
+                                if (msg.id === responseId) {
+                                    return __assign(__assign({}, msg), { content: response_1.data.ai_reply, conversation_id: response_1.data.conversation_id || msg.conversation_id, token_usage: response_1.data.token_usage || 0 });
+                                }
+                                return msg;
+                            });
+                        });
+                    }
+                    setIsLoading(false);
+                    setStreamingMessageId(null);
+                    scrollToBottom();
                     return [3 /*break*/, 4];
                 case 3:
-                    err_1 = _a.sent();
+                    err_1 = _d.sent();
                     console.error("Error sending message:", err_1);
-                    // Clean up accumulated chunks for the failed message
-                    if (streamingId && streamChunkMap.current.has(streamingId)) {
-                        streamChunkMap.current.delete(streamingId);
-                    }
                     errorMsg_1 = (translations === null || translations === void 0 ? void 0 : translations.errorMessage) || "Sorry, there was an error processing your request.";
                     setMessages(function (prev) {
                         return prev.map(function (msg) {
-                            if (msg.id === streamingId) {
+                            if (msg.id === responseId) {
                                 return __assign(__assign({}, msg), { content: errorMsg_1 });
                             }
                             return msg;
@@ -541,7 +414,6 @@ var ChatWidget = function (_a) {
         }
     }, [conversationId, currentPage, totalPages, isLoadingMore, loadMessages]);
     var startNewConversation = (0, react_1.useCallback)(function () {
-        // Reset conversation state for new conversation
         setConversationId("");
         setConversationAliasId("");
         setMessages([]);
@@ -673,12 +545,16 @@ var ChatWidget = function (_a) {
                                     borderRadius: message.type === "assistant" ? "12px 12px 12px 0" : "12px 12px 0 12px",
                                     maxWidth: "80%",
                                     boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                                }, className: "markdown-content", children: message.type === "assistant" ? ((0, jsx_runtime_1.jsx)(react_markdown_1.default, { components: {
+                                }, className: "markdown-content", children: message.type === "assistant" ? (message.id === streamingMessageId && !message.content ? ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading rockship-typing", children: [(0, jsx_runtime_1.jsx)("span", { children: translations.typingLabel }), (0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" })] })] })) : ((0, jsx_runtime_1.jsx)(react_markdown_1.default, { components: {
                                         a: function (_a) {
                                             var node = _a.node, props = __rest(_a, ["node"]);
                                             return (0, jsx_runtime_1.jsx)("a", __assign({ target: "_blank", rel: "noopener noreferrer" }, props));
                                         },
-                                    }, children: message.content })) : (message.content) }) }, message.id));
+                                        img: function (_a) {
+                                            var node = _a.node, props = __rest(_a, ["node"]);
+                                            return (0, jsx_runtime_1.jsx)("img", __assign({}, props, { alt: props.alt || "" }));
+                                        },
+                                    }, children: message.content }))) : (message.content) }) }, message.id));
                     }), isLoading && messages.length > 0 && !isLoadingMore && !streamingMessageId && ((0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading rockship-typing", children: [(0, jsx_runtime_1.jsx)("span", { children: translations.typingLabel }), (0, jsx_runtime_1.jsxs)("div", { className: "rockship-loading-dots", children: [(0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" }), (0, jsx_runtime_1.jsx)("span", { className: "rockship-loading-dot" })] })] })), (0, jsx_runtime_1.jsx)("div", { ref: messagesEndRef })] }), (0, jsx_runtime_1.jsx)(ChatInput_1.ChatInput, { onSendMessage: handleSendMessage, isLoading: isLoading, theme: config.theme, language: language })] }));
 };
 exports.ChatWidget = ChatWidget;

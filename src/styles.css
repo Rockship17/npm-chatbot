@@ -45,7 +45,6 @@
   /* No transform or box-shadow on hover */
 }
 
-
 .rockship-floating-button:before {
   content: "" !important;
   position: absolute !important;
@@ -61,7 +60,6 @@
 .rockship-floating-button:hover:before {
   opacity: 1 !important;
 }
-
 
 .rockship-floating-button:before {
   content: "";
@@ -446,16 +444,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
   border-radius: 12px;
-  background-color: rgba(0, 0, 0, 0.05);
-  margin: 10px 0;
   align-self: center;
   gap: 8px;
   color: #666;
   font-size: 13px;
-  width: auto;
-  max-width: 126px;
+  font-weight: 600;
 }
 
 /* Typing indicator should be left-aligned */

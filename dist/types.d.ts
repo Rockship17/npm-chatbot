@@ -84,8 +84,16 @@ export interface ConversationListResponse {
 export interface ClearConversationResponse {
     data: string;
 }
+/**
+ * Callbacks for the sendMessage API call
+ * Note: The API no longer supports streaming, but this interface is kept for backward compatibility.
+ * Only onComplete and onError are now functional; onChunk is deprecated and will be removed in a future version.
+ */
 export interface StreamingCallbacks {
+    /** @deprecated The API no longer supports streaming responses */
     onChunk?: (chunk: string) => void;
+    /** Called when the complete response is received */
     onComplete?: (response: ChatResponse) => void;
-    onError?: (error: Event) => void;
+    /** Called when an error occurs */
+    onError?: (error: any) => void;
 }
