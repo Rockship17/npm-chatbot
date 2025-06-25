@@ -1,4 +1,4 @@
-# Rockship Chatbot SDK v2.3.0
+# Rockship Chatbot SDK v2.3.1
 
 A JavaScript/TypeScript SDK for easily integrating the Rockship chatbot into your website with the latest API
 
