@@ -48,7 +48,22 @@ var ChatbotAPI = /** @class */ (function () {
         this.baseURL = baseURL;
         this.api = axios_1.default.create({
             baseURL: baseURL,
-            timeout: 30000,
+            // 30s was well below what the assistant actually needs. Replies grow with
+            // the thread — measured at ~10s early on and past 45s on a long one — so a
+            // routine question aborted here and the user saw an error even though the
+            // server went on to answer and store it (2026-08-12: a 31.2s turn returned
+            // 200 and landed in history, seconds after the widget had given up).
+            //
+            // The ceiling is Cloudflare, not us: bot.logicx.vn returns a 524 once the
+            // origin takes 120s. Sitting just under that means a slow-but-finishing
+            // reply gets through, and anything genuinely stuck still fails as a clean
+            // client timeout rather than a Cloudflare error page the SDK cannot read.
+            //
+            // This buys headroom, it does not remove the wall. Streaming is what
+            // removes it — the response starts arriving in the first second, so no
+            // layer ever sees a silent connection (see the streaming path removed in
+            // c9ed9cf, restorable now that the API supports it again).
+            timeout: 110000,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': "Bearer ".concat(authToken)
