@@ -13,7 +13,7 @@ export declare class ChatbotAPI {
      * @param platformUserId Platform user ID
      * @param conversationAliasId Conversation alias - For existing conversations, pass the current alias. For new conversations, pass empty string.
      * @param conversationId Conversation ID - For existing conversations, pass the current ID. For new conversations, pass empty string.
-     * @param callbacks Optional callbacks for response handling
+     * @param callbacks Optional callbacks for streaming response
      * @note IMPORTANT: Both conversationAliasId and conversationId must be passed for existing conversations.
      *       Otherwise, a new conversation will be created.
      */
